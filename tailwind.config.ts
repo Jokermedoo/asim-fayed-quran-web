@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -18,7 +19,25 @@ export default {
 			}
 		},
 		extend: {
+			fontFamily: {
+				'amiri': ['Amiri', 'serif'],
+				'cairo': ['Cairo', 'sans-serif'],
+			},
 			colors: {
+				emerald: {
+					600: '#059669',
+					700: '#047857',
+					800: '#065f46',
+				},
+				gold: {
+					400: '#fbbf24',
+					500: '#f59e0b',
+					600: '#d97706',
+				},
+				'navy-blue': {
+					800: '#1e3a8a',
+					900: '#1e40af',
+				},
 				border: 'hsl(var(--border))',
 				input: 'hsl(var(--input))',
 				ring: 'hsl(var(--ring))',
@@ -84,11 +103,22 @@ export default {
 					to: {
 						height: '0'
 					}
+				},
+				'fade-in': {
+					'0%': {
+						opacity: '0',
+						transform: 'translateY(20px)'
+					},
+					'100%': {
+						opacity: '1',
+						transform: 'translateY(0)'
+					}
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
-				'accordion-up': 'accordion-up 0.2s ease-out'
+				'accordion-up': 'accordion-up 0.2s ease-out',
+				'fade-in': 'fade-in 0.6s ease-out'
 			}
 		}
 	},
