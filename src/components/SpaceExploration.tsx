@@ -1,34 +1,33 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useContentManager } from '../hooks/useContentManager';
 import { useScrollAnimation } from '../hooks/useScrollAnimation';
+import ExplorationCard from './ExplorationCard';
 
 const SpaceExploration = () => {
-  const { content } = useContentManager();
   const { ref, controls } = useScrollAnimation(0.2);
   const [activeExploration, setActiveExploration] = useState(0);
 
   const explorations = [
     {
       id: 1,
-      title: 'استكشاف الكون الداخلي',
-      description: 'رحلة عبر أعماق النفس والروح لاكتشاف السكينة الحقيقية',
+      title: 'أعماق الكون اللانهائي',
+      description: 'رحلة عبر النجوم والمجرات لفهم عظمة الخلق الإلهي',
       image: 'https://images.unsplash.com/photo-1470813740244-df37b8c1edcb',
       particles: '✨',
       color: 'from-purple-900 to-blue-900'
     },
     {
       id: 2,
-      title: 'شلالات الهدوء',
-      description: 'انسياب السكينة كالماء العذب في قلوب المؤمنين',
+      title: 'شلالات النور المقدس',
+      description: 'انسياب الهداية والنور في قلوب المؤمنين',
       image: 'https://images.unsplash.com/photo-1433086966358-54859d0ed716',
       particles: '💧',
       color: 'from-blue-800 to-teal-700'
     },
     {
       id: 3,
-      title: 'قمم الإيمان',
+      title: 'قمم الإيمان الراسخة',
       description: 'التسلق نحو أعلى درجات اليقين والتوحيد',
       image: 'https://images.unsplash.com/photo-1482938289607-e9573fc25ebb',
       particles: '🏔️',
@@ -36,8 +35,8 @@ const SpaceExploration = () => {
     },
     {
       id: 4,
-      title: 'غابات التأمل',
-      description: 'الخضوع في رحاب الطبيعة والتأمل في خلق الله',
+      title: 'غابات التأمل الخضراء',
+      description: 'الخشوع في رحاب الطبيعة والتأمل في خلق الله',
       image: 'https://images.unsplash.com/photo-1472396961693-142e6e269027',
       particles: '🌲',
       color: 'from-green-800 to-emerald-700'
@@ -125,7 +124,7 @@ const SpaceExploration = () => {
           }}
         >
           <h2 className="text-5xl md:text-7xl font-amiri font-bold text-transparent bg-clip-text bg-gradient-to-r from-gold-400 via-emerald-400 to-blue-400 mb-8">
-            استكشف عوالم السكينة
+            استكشف آيات الله في الكون
           </h2>
           <div className="w-32 h-1 bg-gradient-to-r from-gold-400 via-emerald-400 to-blue-400 mx-auto rounded-full mb-8" />
         </motion.div>
@@ -133,75 +132,13 @@ const SpaceExploration = () => {
         {/* Interactive Exploration Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-16">
           {explorations.map((exploration, index) => (
-            <motion.div
+            <ExplorationCard
               key={exploration.id}
-              variants={{
-                hidden: { opacity: 0, scale: 0.8, rotateY: -90 },
-                visible: { 
-                  opacity: 1, 
-                  scale: 1, 
-                  rotateY: 0,
-                  transition: { delay: index * 0.2 }
-                }
-              }}
-              whileHover={{ 
-                scale: 1.05,
-                rotateY: 5,
-                z: 50,
-                transition: { duration: 0.3 }
-              }}
+              exploration={exploration}
+              isActive={activeExploration === index}
               onClick={() => setActiveExploration(index)}
-              className={`relative overflow-hidden rounded-3xl h-80 cursor-pointer transform-gpu ${
-                activeExploration === index ? 'ring-4 ring-gold-400' : ''
-              }`}
-            >
-              <div 
-                className={`absolute inset-0 bg-gradient-to-br ${exploration.color} opacity-90`}
-              />
-              
-              <div 
-                className="absolute inset-0 opacity-30"
-                style={{
-                  backgroundImage: `url(${exploration.image})`,
-                  backgroundSize: 'cover',
-                  backgroundPosition: 'center',
-                }}
-              />
-
-              <div className="absolute inset-0 p-8 flex flex-col justify-end text-white">
-                <motion.div
-                  className="text-4xl mb-4"
-                  animate={{ 
-                    scale: activeExploration === index ? [1, 1.2, 1] : 1,
-                    rotate: activeExploration === index ? [0, 10, -10, 0] : 0
-                  }}
-                  transition={{ duration: 2, repeat: activeExploration === index ? Infinity : 0 }}
-                >
-                  {exploration.particles}
-                </motion.div>
-                
-                <h3 className="text-2xl font-amiri font-bold mb-4">
-                  {exploration.title}
-                </h3>
-                
-                <p className="text-lg font-cairo opacity-90 leading-relaxed">
-                  {exploration.description}
-                </p>
-              </div>
-
-              {/* Particle Effect on Hover */}
-              <motion.div 
-                className="absolute inset-0 pointer-events-none"
-                whileHover={{
-                  background: [
-                    'radial-gradient(circle at 20% 20%, rgba(251,191,36,0.3) 0%, transparent 50%)',
-                    'radial-gradient(circle at 80% 80%, rgba(5,150,105,0.3) 0%, transparent 50%)',
-                    'radial-gradient(circle at 50% 50%, rgba(59,130,246,0.3) 0%, transparent 50%)'
-                  ]
-                }}
-                transition={{ duration: 2, repeat: Infinity }}
-              />
-            </motion.div>
+              index={index}
+            />
           ))}
         </div>
 
