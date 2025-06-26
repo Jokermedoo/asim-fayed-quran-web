@@ -6,45 +6,36 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
+import { Separator } from '@/components/ui/separator';
 import { useContentManager } from '../hooks/useContentManager';
 import { useToast } from '@/hooks/use-toast';
 import { 
-  LogOut, 
-  Settings, 
-  Image, 
-  Type, 
-  Palette, 
-  Book,
-  Home,
-  Eye,
-  Save,
-  Plus,
-  Trash2,
-  Globe,
-  Phone,
-  Mail,
-  MapPin,
-  Youtube,
-  Facebook,
-  MessageCircle,
-  Send
+  LogOut, Settings, Palette, Type, Book, Home, Eye, Save, Plus, Trash2,
+  Globe, Phone, Mail, MapPin, Youtube, Facebook, MessageCircle, Send,
+  Download, Upload, RotateCcw, Sparkles, Layout, Search, Monitor
 } from 'lucide-react';
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
-  const { content, updateContent } = useContentManager();
+  const { content, updateContent, resetToDefault, exportContent, importContent } = useContentManager();
   const { toast } = useToast();
-  const [activeTab, setActiveTab] = useState('content');
+  const [activeTab, setActiveTab] = useState('hero');
+  const [previewMode, setPreviewMode] = useState(false);
 
-  // Local state for editing
+  // Local state for real-time editing
   const [heroData, setHeroData] = useState(content.hero);
   const [colorsData, setColorsData] = useState(content.colors);
   const [wisdomQuotes, setWisdomQuotes] = useState(content.wisdomQuotes);
-  const [cosmicData, setCosomicData] = useState(content.cosmicExploration);
+  const [cosmicData, setCosmicData] = useState(content.cosmicExploration);
   const [aboutData, setAboutData] = useState(content.about);
   const [servicesData, setServicesData] = useState(content.services);
   const [socialData, setSocialData] = useState(content.socialMedia);
   const [contactData, setContactData] = useState(content.contact);
+  const [designData, setDesignData] = useState(content.design);
+  const [layoutData, setLayoutData] = useState(content.layout);
+  const [seoData, setSeoData] = useState(content.seo);
 
   useEffect(() => {
     const isLoggedIn = localStorage.getItem('isAdminLoggedIn');
@@ -58,11 +49,14 @@ const AdminDashboard = () => {
     setHeroData(content.hero);
     setColorsData(content.colors);
     setWisdomQuotes(content.wisdomQuotes);
-    setCosomicData(content.cosmicExploration);
+    setCosmicData(content.cosmicExploration);
     setAboutData(content.about);
     setServicesData(content.services);
     setSocialData(content.socialMedia);
     setContactData(content.contact);
+    setDesignData(content.design);
+    setLayoutData(content.layout);
+    setSeoData(content.seo);
   }, [content]);
 
   const handleLogout = () => {
@@ -79,13 +73,37 @@ const AdminDashboard = () => {
       about: aboutData,
       services: servicesData,
       socialMedia: socialData,
-      contact: contactData
+      contact: contactData,
+      design: designData,
+      layout: layoutData,
+      seo: seoData
     });
     
     toast({
       title: "تم الحفظ بنجاح! ✅",
       description: "تم حفظ جميع التغييرات وتطبيقها على الموقع",
     });
+  };
+
+  const handleFileImport = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      importContent(file);
+      toast({
+        title: "تم الاستيراد بنجاح! 📥",
+        description: "تم استيراد المحتوى من الملف",
+      });
+    }
+  };
+
+  const handleReset = () => {
+    if (confirm('هل أنت متأكد من إعادة تعيين جميع البيانات للوضع الافتراضي؟')) {
+      resetToDefault();
+      toast({
+        title: "تم إعادة التعيين! 🔄",
+        description: "تم إعادة تعيين جميع البيانات للوضع الافتراضي",
+      });
+    }
   };
 
   const addNewQuote = () => {
@@ -108,134 +126,96 @@ const AdminDashboard = () => {
     setWisdomQuotes(wisdomQuotes.filter(quote => quote.id !== id));
   };
 
-  const addNewStage = () => {
-    const newStage = {
-      id: Date.now(),
-      title: '',
-      description: '',
-      icon: '✨',
-      color: 'from-blue-600 to-purple-600'
-    };
-    setCosomicData({
-      ...cosmicData,
-      stages: [...cosmicData.stages, newStage]
-    });
-  };
-
-  const updateStage = (id: number, field: string, value: string) => {
-    setCosomicData({
-      ...cosmicData,
-      stages: cosmicData.stages.map(stage => 
-        stage.id === id ? { ...stage, [field]: value } : stage
-      )
-    });
-  };
-
-  const deleteStage = (id: number) => {
-    setCosomicData({
-      ...cosmicData,
-      stages: cosmicData.stages.filter(stage => stage.id !== id)
-    });
-  };
-
-  const addNewService = () => {
-    const newService = {
-      id: Date.now(),
-      title: '',
-      description: '',
-      features: [''],
-      icon: '📚',
-      color: 'from-blue-600 to-indigo-600'
-    };
-    setServicesData([...servicesData, newService]);
-  };
-
-  const updateService = (id: number, field: string, value: any) => {
-    setServicesData(servicesData.map(service => 
-      service.id === id ? { ...service, [field]: value } : service
-    ));
-  };
-
-  const deleteService = (id: number) => {
-    setServicesData(servicesData.filter(service => service.id !== id));
-  };
-
-  const addNewAchievement = () => {
-    const newAchievement = {
-      id: Date.now(),
-      title: '',
-      description: '',
-      icon: '🏆'
-    };
-    setAboutData({
-      ...aboutData,
-      achievements: [...aboutData.achievements, newAchievement]
-    });
-  };
-
-  const updateAchievement = (id: number, field: string, value: string) => {
-    setAboutData({
-      ...aboutData,
-      achievements: aboutData.achievements.map(achievement => 
-        achievement.id === id ? { ...achievement, [field]: value } : achievement
-      )
-    });
-  };
-
-  const deleteAchievement = (id: number) => {
-    setAboutData({
-      ...aboutData,
-      achievements: aboutData.achievements.filter(achievement => achievement.id !== id)
-    });
-  };
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100" dir="rtl">
-      {/* Header */}
-      <div className="bg-white shadow-sm border-b">
-        <div className="container mx-auto px-6 py-4 flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-gray-800 font-cairo">
-            لوحة تحكم موقع الشيخ عاصم فايد
-          </h1>
-          <div className="flex gap-3">
-            <Button
-              onClick={() => window.open('/', '_blank')}
-              variant="outline"
-              className="flex items-center gap-2"
-            >
-              <Eye className="w-4 h-4" />
-              معاينة الموقع
-            </Button>
-            <Button
-              onClick={handleLogout}
-              variant="destructive"
-              className="flex items-center gap-2"
-            >
-              <LogOut className="w-4 h-4" />
-              تسجيل خروج
-            </Button>
+      {/* Enhanced Header */}
+      <div className="bg-white shadow-lg border-b">
+        <div className="container mx-auto px-6 py-4">
+          <div className="flex justify-between items-center">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl flex items-center justify-center">
+                <Settings className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold text-gray-800 font-cairo">
+                  لوحة تحكم الموقع الشخصي
+                </h1>
+                <p className="text-gray-600 text-sm">إدارة شاملة للمحتوى والتصميم</p>
+              </div>
+            </div>
+            
+            <div className="flex gap-3">
+              <Button
+                onClick={() => window.open('/', '_blank')}
+                variant="outline"
+                className="flex items-center gap-2"
+              >
+                <Eye className="w-4 h-4" />
+                معاينة الموقع
+              </Button>
+              
+              <Button
+                onClick={exportContent}
+                variant="outline"
+                className="flex items-center gap-2"
+              >
+                <Download className="w-4 h-4" />
+                تصدير
+              </Button>
+              
+              <div className="relative">
+                <input
+                  type="file"
+                  accept=".json"
+                  onChange={handleFileImport}
+                  className="absolute inset-0 opacity-0 cursor-pointer"
+                />
+                <Button variant="outline" className="flex items-center gap-2">
+                  <Upload className="w-4 h-4" />
+                  استيراد
+                </Button>
+              </div>
+              
+              <Button
+                onClick={handleReset}
+                variant="outline"
+                className="flex items-center gap-2 text-orange-600"
+              >
+                <RotateCcw className="w-4 h-4" />
+                إعادة تعيين
+              </Button>
+              
+              <Button
+                onClick={handleLogout}
+                variant="destructive"
+                className="flex items-center gap-2"
+              >
+                <LogOut className="w-4 h-4" />
+                تسجيل خروج
+              </Button>
+            </div>
           </div>
         </div>
       </div>
 
       <div className="container mx-auto px-6 py-8">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid grid-cols-7 w-full max-w-4xl mx-auto">
-            <TabsTrigger value="content" className="flex items-center gap-2">
-              <Type className="w-4 h-4" />
-              المحتوى
+          <TabsList className="grid grid-cols-9 w-full max-w-6xl mx-auto bg-white shadow-md">
+            <TabsTrigger value="hero" className="flex items-center gap-2">
+              <Home className="w-4 h-4" />
+              الرئيسية
+            </TabsTrigger>
+            <TabsTrigger value="quotes" className="flex items-center gap-2">
+              <Book className="w-4 h-4" />
+              الآيات
             </TabsTrigger>
             <TabsTrigger value="cosmic" className="flex items-center gap-2">
               <Globe className="w-4 h-4" />
               الكون
             </TabsTrigger>
-            <TabsTrigger value="wisdom" className="flex items-center gap-2">
-              <Book className="w-4 h-4" />
-              الآيات
-            </TabsTrigger>
             <TabsTrigger value="about" className="flex items-center gap-2">
-              <Home className="w-4 h-4" />
-              عن الشيخ
+              <Type className="w-4 h-4" />
+              عني
             </TabsTrigger>
             <TabsTrigger value="services" className="flex items-center gap-2">
               <Settings className="w-4 h-4" />
@@ -249,341 +229,115 @@ const AdminDashboard = () => {
               <Palette className="w-4 h-4" />
               التصميم
             </TabsTrigger>
+            <TabsTrigger value="layout" className="flex items-center gap-2">
+              <Layout className="w-4 h-4" />
+              التخطيط
+            </TabsTrigger>
+            <TabsTrigger value="seo" className="flex items-center gap-2">
+              <Search className="w-4 h-4" />
+              السيو
+            </TabsTrigger>
           </TabsList>
 
-          {/* Content Management */}
-          <TabsContent value="content" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
+          {/* Hero Section Management */}
+          <TabsContent value="hero" className="space-y-6">
+            <Card className="shadow-lg">
+              <CardHeader className="bg-gradient-to-r from-blue-50 to-purple-50">
+                <CardTitle className="flex items-center gap-2 text-blue-800">
                   <Home className="w-5 h-5" />
-                  إدارة المحتوى الرئيسي
+                  إدارة القسم الرئيسي
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium mb-2">العنوان الرئيسي</label>
-                  <Input
-                    value={heroData.title}
-                    onChange={(e) => setHeroData({...heroData, title: e.target.value})}
-                    className="font-amiri text-lg"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-2">العنوان الفرعي</label>
-                  <Input
-                    value={heroData.subtitle}
-                    onChange={(e) => setHeroData({...heroData, subtitle: e.target.value})}
-                    className="font-cairo"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-2">الوصف</label>
-                  <Textarea
-                    value={heroData.description}
-                    onChange={(e) => setHeroData({...heroData, description: e.target.value})}
-                    rows={4}
-                    className="font-cairo"
-                  />
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          {/* Cosmic Exploration Management */}
-          <TabsContent value="cosmic" className="space-y-6">
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between">
-                <CardTitle className="flex items-center gap-2">
-                  <Globe className="w-5 h-5" />
-                  إدارة آيات الله في الكون
-                </CardTitle>
-                <Button onClick={addNewStage} className="bg-gold-400 hover:bg-gold-500">
-                  <Plus className="w-4 h-4 ml-2" />
-                  إضافة مرحلة جديدة
-                </Button>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium mb-2">عنوان القسم</label>
-                  <Input
-                    value={cosmicData.title}
-                    onChange={(e) => setCosomicData({...cosmicData, title: e.target.value})}
-                    className="font-cairo text-lg mb-6"
-                  />
-                </div>
-                
-                {cosmicData.stages.map((stage, index) => (
-                  <div key={stage.id} className="border rounded-lg p-4 space-y-3">
-                    <div className="flex items-center justify-between mb-3">
-                      <h4 className="font-bold text-lg">المرحلة {index + 1}</h4>
-                      <Button
-                        onClick={() => deleteStage(stage.id)}
-                        variant="destructive"
-                        size="sm"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
+              <CardContent className="space-y-6 p-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium mb-2 text-gray-700">العنوان الرئيسي</label>
+                      <Input
+                        value={heroData.title}
+                        onChange={(e) => setHeroData({...heroData, title: e.target.value})}
+                        className="font-amiri text-lg border-2 focus:border-blue-500"
+                        placeholder="اكتب العنوان الرئيسي..."
+                      />
                     </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                      <div>
-                        <label className="block text-sm font-medium mb-2">الأيقونة</label>
-                        <Input
-                          value={stage.icon}
-                          onChange={(e) => updateStage(stage.id, 'icon', e.target.value)}
-                          className="text-center text-2xl"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium mb-2">العنوان</label>
-                        <Input
-                          value={stage.title}
-                          onChange={(e) => updateStage(stage.id, 'title', e.target.value)}
-                          className="font-cairo"
-                        />
-                      </div>
-                      <div className="md:col-span-2">
-                        <label className="block text-sm font-medium mb-2">الوصف</label>
-                        <Textarea
-                          value={stage.description}
-                          onChange={(e) => updateStage(stage.id, 'description', e.target.value)}
-                          className="font-cairo"
-                          rows={2}
-                        />
-                      </div>
-                      <div className="md:col-span-2">
-                        <label className="block text-sm font-medium mb-2">التدرج اللوني</label>
-                        <Input
-                          value={stage.color}
-                          onChange={(e) => updateStage(stage.id, 'color', e.target.value)}
-                          className="font-mono text-sm"
-                          placeholder="from-blue-600 to-purple-600"
-                        />
-                      </div>
+                    <div>
+                      <label className="block text-sm font-medium mb-2 text-gray-700">العنوان الفرعي</label>
+                      <Input
+                        value={heroData.subtitle}
+                        onChange={(e) => setHeroData({...heroData, subtitle: e.target.value})}
+                        className="font-cairo border-2 focus:border-blue-500"
+                        placeholder="اكتب العنوان الفرعي..."
+                      />
                     </div>
                   </div>
-                ))}
+                  <div>
+                    <label className="block text-sm font-medium mb-2 text-gray-700">الوصف التفصيلي</label>
+                    <Textarea
+                      value={heroData.description}
+                      onChange={(e) => setHeroData({...heroData, description: e.target.value})}
+                      rows={6}
+                      className="font-cairo border-2 focus:border-blue-500 resize-none"
+                      placeholder="اكتب الوصف التفصيلي للصفحة الرئيسية..."
+                    />
+                  </div>
+                </div>
               </CardContent>
             </Card>
           </TabsContent>
 
-          {/* Wisdom Quotes Management */}
-          <TabsContent value="wisdom" className="space-y-6">
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between">
-                <CardTitle className="flex items-center gap-2">
+          {/* Quotes Management */}
+          <TabsContent value="quotes" className="space-y-6">
+            <Card className="shadow-lg">
+              <CardHeader className="bg-gradient-to-r from-green-50 to-emerald-50 flex flex-row items-center justify-between">
+                <CardTitle className="flex items-center gap-2 text-green-800">
                   <Book className="w-5 h-5" />
-                  إدارة آيات القرآن الكريم
+                  إدارة الآيات القرآنية
                 </CardTitle>
-                <Button onClick={addNewQuote} className="bg-gold-400 hover:bg-gold-500">
+                <Button onClick={addNewQuote} className="bg-green-600 hover:bg-green-700">
                   <Plus className="w-4 h-4 ml-2" />
                   إضافة آية جديدة
                 </Button>
               </CardHeader>
-              <CardContent className="space-y-4">
-                {wisdomQuotes.map((quote) => (
-                  <div key={quote.id} className="border rounded-lg p-4 space-y-3">
-                    <div>
-                      <label className="block text-sm font-medium mb-2">النص العربي</label>
-                      <Textarea
-                        value={quote.arabic}
-                        onChange={(e) => updateQuote(quote.id, 'arabic', e.target.value)}
-                        className="font-amiri text-lg"
-                        rows={2}
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium mb-2">الترجمة/المعنى</label>
-                      <Input
-                        value={quote.translation}
-                        onChange={(e) => updateQuote(quote.id, 'translation', e.target.value)}
-                        className="font-cairo"
-                      />
-                    </div>
-                    <div className="flex gap-3">
-                      <div className="flex-1">
-                        <label className="block text-sm font-medium mb-2">المصدر</label>
-                        <Input
-                          value={quote.source}
-                          onChange={(e) => updateQuote(quote.id, 'source', e.target.value)}
-                          className="font-cairo"
-                        />
-                      </div>
-                      <div className="flex items-end">
-                        <Button
-                          onClick={() => deleteQuote(quote.id)}
-                          variant="destructive"
-                          size="sm"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          {/* About Management */}
-          <TabsContent value="about" className="space-y-6">
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between">
-                <CardTitle className="flex items-center gap-2">
-                  <Home className="w-5 h-5" />
-                  إدارة صفحة "عن الشيخ"
-                </CardTitle>
-                <Button onClick={addNewAchievement} className="bg-gold-400 hover:bg-gold-500">
-                  <Plus className="w-4 h-4 ml-2" />
-                  إضافة إنجاز جديد
-                </Button>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium mb-2">العنوان</label>
-                    <Input
-                      value={aboutData.title}
-                      onChange={(e) => setAboutData({...aboutData, title: e.target.value})}
-                      className="font-amiri text-lg"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-2">العنوان الفرعي</label>
-                    <Input
-                      value={aboutData.subtitle}
-                      onChange={(e) => setAboutData({...aboutData, subtitle: e.target.value})}
-                      className="font-cairo"
-                    />
-                  </div>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-2">الوصف</label>
-                  <Textarea
-                    value={aboutData.description}
-                    onChange={(e) => setAboutData({...aboutData, description: e.target.value})}
-                    rows={4}
-                    className="font-cairo"
-                  />
-                </div>
-                
-                <div className="space-y-4">
-                  <h3 className="text-lg font-bold">الإنجازات</h3>
-                  {aboutData.achievements.map((achievement, index) => (
-                    <div key={achievement.id} className="border rounded-lg p-4 space-y-3">
-                      <div className="flex items-center justify-between mb-3">
-                        <h4 className="font-bold">الإنجاز {index + 1}</h4>
-                        <Button
-                          onClick={() => deleteAchievement(achievement.id)}
-                          variant="destructive"
-                          size="sm"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
-                      </div>
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                        <div>
-                          <label className="block text-sm font-medium mb-2">الأيقونة</label>
-                          <Input
-                            value={achievement.icon}
-                            onChange={(e) => updateAchievement(achievement.id, 'icon', e.target.value)}
-                            className="text-center text-2xl"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium mb-2">العنوان</label>
-                          <Input
-                            value={achievement.title}
-                            onChange={(e) => updateAchievement(achievement.id, 'title', e.target.value)}
-                            className="font-cairo"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium mb-2">الوصف</label>
-                          <Textarea
-                            value={achievement.description}
-                            onChange={(e) => updateAchievement(achievement.id, 'description', e.target.value)}
-                            className="font-cairo"
-                            rows={2}
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          {/* Services Management */}
-          <TabsContent value="services" className="space-y-6">
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between">
-                <CardTitle className="flex items-center gap-2">
-                  <Settings className="w-5 h-5" />
-                  إدارة الخدمات
-                </CardTitle>
-                <Button onClick={addNewService} className="bg-gold-400 hover:bg-gold-500">
-                  <Plus className="w-4 h-4 ml-2" />
-                  إضافة خدمة جديدة
-                </Button>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                {servicesData.map((service, index) => (
-                  <div key={service.id} className="border rounded-lg p-4 space-y-4">
+              <CardContent className="space-y-6 p-6 max-h-96 overflow-y-auto">
+                {wisdomQuotes.map((quote, index) => (
+                  <div key={quote.id} className="border-2 border-gray-200 rounded-lg p-4 space-y-4 hover:border-green-300 transition-colors">
                     <div className="flex items-center justify-between">
-                      <h4 className="font-bold text-lg">الخدمة {index + 1}</h4>
+                      <h4 className="font-bold text-lg text-gray-800">الآية رقم {index + 1}</h4>
                       <Button
-                        onClick={() => deleteService(service.id)}
+                        onClick={() => deleteQuote(quote.id)}
                         variant="destructive"
                         size="sm"
                       >
                         <Trash2 className="w-4 h-4" />
                       </Button>
                     </div>
-                    
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-sm font-medium mb-2">الأيقونة</label>
-                        <Input
-                          value={service.icon}
-                          onChange={(e) => updateService(service.id, 'icon', e.target.value)}
-                          className="text-center text-2xl"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium mb-2">العنوان</label>
-                        <Input
-                          value={service.title}
-                          onChange={(e) => updateService(service.id, 'title', e.target.value)}
-                          className="font-cairo"
-                        />
-                      </div>
                       <div className="md:col-span-2">
-                        <label className="block text-sm font-medium mb-2">الوصف</label>
+                        <label className="block text-sm font-medium mb-2">النص العربي</label>
                         <Textarea
-                          value={service.description}
-                          onChange={(e) => updateService(service.id, 'description', e.target.value)}
-                          className="font-cairo"
+                          value={quote.arabic}
+                          onChange={(e) => updateQuote(quote.id, 'arabic', e.target.value)}
+                          className="font-amiri text-lg border-2 focus:border-green-500"
                           rows={3}
+                          placeholder="اكتب النص العربي للآية..."
                         />
                       </div>
                       <div>
-                        <label className="block text-sm font-medium mb-2">التدرج اللوني</label>
+                        <label className="block text-sm font-medium mb-2">المعنى/الترجمة</label>
                         <Input
-                          value={service.color}
-                          onChange={(e) => updateService(service.id, 'color', e.target.value)}
-                          className="font-mono text-sm"
-                          placeholder="from-blue-600 to-indigo-600"
+                          value={quote.translation}
+                          onChange={(e) => updateQuote(quote.id, 'translation', e.target.value)}
+                          className="font-cairo border-2 focus:border-green-500"
+                          placeholder="اكتب المعنى أو الترجمة..."
                         />
                       </div>
                       <div>
-                        <label className="block text-sm font-medium mb-2">المميزات (مفصولة بفواصل)</label>
-                        <Textarea
-                          value={service.features.join(', ')}
-                          onChange={(e) => updateService(service.id, 'features', e.target.value.split(', '))}
-                          className="font-cairo"
-                          rows={2}
+                        <label className="block text-sm font-medium mb-2">المصدر</label>
+                        <Input
+                          value={quote.source}
+                          onChange={(e) => updateQuote(quote.id, 'source', e.target.value)}
+                          className="font-cairo border-2 focus:border-green-500"
+                          placeholder="اكتب مصدر الآية..."
                         />
                       </div>
                     </div>
@@ -593,17 +347,156 @@ const AdminDashboard = () => {
             </Card>
           </TabsContent>
 
-          {/* Contact & Social Media Management */}
+          {/* Design Customization */}
+          <TabsContent value="design" className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <Card className="shadow-lg">
+                <CardHeader className="bg-gradient-to-r from-purple-50 to-pink-50">
+                  <CardTitle className="flex items-center gap-2 text-purple-800">
+                    <Palette className="w-5 h-5" />
+                    ألوان الموقع
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4 p-6">
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium mb-2">اللون الأساسي</label>
+                      <div className="flex gap-3">
+                        <input
+                          type="color"
+                          value={colorsData.primary}
+                          onChange={(e) => setColorsData({...colorsData, primary: e.target.value})}
+                          className="w-12 h-12 rounded-lg border-2 cursor-pointer"
+                        />
+                        <Input
+                          value={colorsData.primary}
+                          onChange={(e) => setColorsData({...colorsData, primary: e.target.value})}
+                          className="flex-1 font-mono"
+                          placeholder="#1e3a8a"
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium mb-2">اللون الثانوي</label>
+                      <div className="flex gap-3">
+                        <input
+                          type="color"
+                          value={colorsData.secondary}
+                          onChange={(e) => setColorsData({...colorsData, secondary: e.target.value})}
+                          className="w-12 h-12 rounded-lg border-2 cursor-pointer"
+                        />
+                        <Input
+                          value={colorsData.secondary}
+                          onChange={(e) => setColorsData({...colorsData, secondary: e.target.value})}
+                          className="flex-1 font-mono"
+                          placeholder="#fbbf24"
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium mb-2">لون التمييز</label>
+                      <div className="flex gap-3">
+                        <input
+                          type="color"
+                          value={colorsData.accent}
+                          onChange={(e) => setColorsData({...colorsData, accent: e.target.value})}
+                          className="w-12 h-12 rounded-lg border-2 cursor-pointer"
+                        />
+                        <Input
+                          value={colorsData.accent}
+                          onChange={(e) => setColorsData({...colorsData, accent: e.target.value})}
+                          className="flex-1 font-mono"
+                          placeholder="#059669"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="shadow-lg">
+                <CardHeader className="bg-gradient-to-r from-indigo-50 to-blue-50">
+                  <CardTitle className="flex items-center gap-2 text-indigo-800">
+                    <Sparkles className="w-5 h-5" />
+                    إعدادات التصميم
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4 p-6">
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium mb-2">نوع الخلفية</label>
+                      <Select 
+                        value={designData.backgroundType} 
+                        onValueChange={(value: 'cosmic' | 'nature' | 'minimal') => 
+                          setDesignData({...designData, backgroundType: value})
+                        }
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="cosmic">خلفية كونية</SelectItem>
+                          <SelectItem value="nature">خلفية طبيعية</SelectItem>
+                          <SelectItem value="minimal">خلفية بسيطة</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium mb-2">سرعة الحركة</label>
+                      <Select 
+                        value={designData.animationSpeed} 
+                        onValueChange={(value: 'slow' | 'normal' | 'fast') => 
+                          setDesignData({...designData, animationSpeed: value})
+                        }
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="slow">بطيئة</SelectItem>
+                          <SelectItem value="normal">عادية</SelectItem>
+                          <SelectItem value="fast">سريعة</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    
+                    <div className="flex items-center justify-between">
+                      <label className="text-sm font-medium">تفعيل الجسيمات</label>
+                      <Switch
+                        checked={designData.enableParticles}
+                        onCheckedChange={(checked) => 
+                          setDesignData({...designData, enableParticles: checked})
+                        }
+                      />
+                    </div>
+                    
+                    <div className="flex items-center justify-between">
+                      <label className="text-sm font-medium">العناصر العائمة</label>
+                      <Switch
+                        checked={designData.enableFloatingElements}
+                        onCheckedChange={(checked) => 
+                          setDesignData({...designData, enableFloatingElements: checked})
+                        }
+                      />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
+          {/* Contact & Social Media */}
           <TabsContent value="contact" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Phone className="w-5 h-5" />
-                  إدارة معلومات التواصل
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <Card className="shadow-lg">
+                <CardHeader className="bg-gradient-to-r from-blue-50 to-cyan-50">
+                  <CardTitle className="flex items-center gap-2 text-blue-800">
+                    <Phone className="w-5 h-5" />
+                    معلومات التواصل
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4 p-6">
                   <div>
                     <label className="block text-sm font-medium mb-2 flex items-center gap-2">
                       <Phone className="w-4 h-4" />
@@ -612,7 +505,8 @@ const AdminDashboard = () => {
                     <Input
                       value={contactData.phone}
                       onChange={(e) => setContactData({...contactData, phone: e.target.value})}
-                      className="font-cairo"
+                      className="font-cairo border-2 focus:border-blue-500"
+                      placeholder="+20 100 000 0000"
                     />
                   </div>
                   <div>
@@ -623,7 +517,8 @@ const AdminDashboard = () => {
                     <Input
                       value={contactData.email}
                       onChange={(e) => setContactData({...contactData, email: e.target.value})}
-                      className="font-cairo"
+                      className="font-cairo border-2 focus:border-blue-500"
+                      placeholder="info@example.com"
                     />
                   </div>
                   <div>
@@ -634,12 +529,21 @@ const AdminDashboard = () => {
                     <Input
                       value={contactData.address}
                       onChange={(e) => setContactData({...contactData, address: e.target.value})}
-                      className="font-cairo"
+                      className="font-cairo border-2 focus:border-blue-500"
+                      placeholder="المدينة، البلد"
                     />
                   </div>
-                </div>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                </CardContent>
+              </Card>
+
+              <Card className="shadow-lg">
+                <CardHeader className="bg-gradient-to-r from-green-50 to-teal-50">
+                  <CardTitle className="flex items-center gap-2 text-green-800">
+                    <Globe className="w-5 h-5" />
+                    وسائل التواصل الاجتماعي
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4 p-6">
                   <div>
                     <label className="block text-sm font-medium mb-2 flex items-center gap-2">
                       <Youtube className="w-4 h-4" />
@@ -648,7 +552,8 @@ const AdminDashboard = () => {
                     <Input
                       value={socialData.youtube}
                       onChange={(e) => setSocialData({...socialData, youtube: e.target.value})}
-                      className="font-cairo"
+                      className="font-cairo border-2 focus:border-green-500"
+                      placeholder="https://youtube.com/@username"
                     />
                   </div>
                   <div>
@@ -659,7 +564,8 @@ const AdminDashboard = () => {
                     <Input
                       value={socialData.facebook}
                       onChange={(e) => setSocialData({...socialData, facebook: e.target.value})}
-                      className="font-cairo"
+                      className="font-cairo border-2 focus:border-green-500"
+                      placeholder="https://facebook.com/username"
                     />
                   </div>
                   <div>
@@ -670,7 +576,8 @@ const AdminDashboard = () => {
                     <Input
                       value={socialData.telegram}
                       onChange={(e) => setSocialData({...socialData, telegram: e.target.value})}
-                      className="font-cairo"
+                      className="font-cairo border-2 focus:border-green-500"
+                      placeholder="https://t.me/username"
                     />
                   </div>
                   <div>
@@ -681,85 +588,76 @@ const AdminDashboard = () => {
                     <Input
                       value={socialData.whatsapp}
                       onChange={(e) => setSocialData({...socialData, whatsapp: e.target.value})}
-                      className="font-cairo"
+                      className="font-cairo border-2 focus:border-green-500"
+                      placeholder="https://wa.me/201000000000"
                     />
                   </div>
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            </div>
           </TabsContent>
 
-          {/* Design Customization */}
-          <TabsContent value="design" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Palette className="w-5 h-5" />
-                  تخصيص الألوان والتصميم
+          {/* SEO Management */}
+          <TabsContent value="seo" className="space-y-6">
+            <Card className="shadow-lg">
+              <CardHeader className="bg-gradient-to-r from-orange-50 to-red-50">
+                <CardTitle className="flex items-center gap-2 text-orange-800">
+                  <Search className="w-5 h-5" />
+                  إعدادات تحسين محركات البحث (SEO)
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium mb-2">اللون الأساسي</label>
-                    <div className="flex gap-2">
-                      <input
-                        type="color"
-                        value={colorsData.primary}
-                        onChange={(e) => setColorsData({...colorsData, primary: e.target.value})}
-                        className="w-12 h-10 rounded border"
-                      />
-                      <Input
-                        value={colorsData.primary}
-                        onChange={(e) => setColorsData({...colorsData, primary: e.target.value})}
-                        className="flex-1"
-                      />
-                    </div>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-2">اللون الثانوي</label>
-                    <div className="flex gap-2">
-                      <input
-                        type="color"
-                        value={colorsData.secondary}
-                        onChange={(e) => setColorsData({...colorsData, secondary: e.target.value})}
-                        className="w-12 h-10 rounded border"
-                      />
-                      <Input
-                        value={colorsData.secondary}
-                        onChange={(e) => setColorsData({...colorsData, secondary: e.target.value})}
-                        className="flex-1"
-                      />
-                    </div>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-2">لون التمييز</label>
-                    <div className="flex gap-2">
-                      <input
-                        type="color"
-                        value={colorsData.accent}
-                        onChange={(e) => setColorsData({...colorsData, accent: e.target.value})}
-                        className="w-12 h-10 rounded border"
-                      />
-                      <Input
-                        value={colorsData.accent}
-                        onChange={(e) => setColorsData({...colorsData, accent: e.target.value})}
-                        className="flex-1"
-                      />
-                    </div>
-                  </div>
+              <CardContent className="space-y-4 p-6">
+                <div>
+                  <label className="block text-sm font-medium mb-2">عنوان الصفحة (Meta Title)</label>
+                  <Input
+                    value={seoData.metaTitle}
+                    onChange={(e) => setSeoData({...seoData, metaTitle: e.target.value})}
+                    className="font-cairo border-2 focus:border-orange-500"
+                    placeholder="عنوان الصفحة الذي يظهر في نتائج البحث"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    الطول المثالي: 50-60 حرف (الحالي: {seoData.metaTitle.length})
+                  </p>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium mb-2">وصف الصفحة (Meta Description)</label>
+                  <Textarea
+                    value={seoData.metaDescription}
+                    onChange={(e) => setSeoData({...seoData, metaDescription: e.target.value})}
+                    className="font-cairo border-2 focus:border-orange-500"
+                    rows={3}
+                    placeholder="وصف مختصر عن محتوى الصفحة يظهر في نتائج البحث"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    الطول المثالي: 150-160 حرف (الحالي: {seoData.metaDescription.length})
+                  </p>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium mb-2">الكلمات المفتاحية</label>
+                  <Textarea
+                    value={seoData.keywords.join(', ')}
+                    onChange={(e) => setSeoData({...seoData, keywords: e.target.value.split(', ').filter(k => k.trim())})}
+                    className="font-cairo border-2 focus:border-orange-500"
+                    rows={2}
+                    placeholder="كلمة مفتاحية 1, كلمة مفتاحية 2, كلمة مفتاحية 3"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    افصل الكلمات المفتاحية بفواصل
+                  </p>
                 </div>
               </CardContent>
             </Card>
           </TabsContent>
         </Tabs>
 
-        {/* Save Button */}
+        {/* Fixed Save Button */}
         <div className="fixed bottom-6 left-6 z-50">
           <Button
             onClick={saveAllChanges}
             size="lg"
-            className="bg-green-600 hover:bg-green-700 text-white shadow-lg"
+            className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white shadow-2xl hover:shadow-3xl transform hover:scale-105 transition-all duration-300"
           >
             <Save className="w-5 h-5 ml-2" />
             حفظ جميع التغييرات

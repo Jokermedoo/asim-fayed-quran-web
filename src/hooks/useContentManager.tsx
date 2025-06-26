@@ -58,6 +58,23 @@ export interface WebsiteContent {
     email: string;
     address: string;
   };
+  design: {
+    backgroundType: 'cosmic' | 'nature' | 'minimal';
+    animationSpeed: 'slow' | 'normal' | 'fast';
+    enableParticles: boolean;
+    enableFloatingElements: boolean;
+  };
+  layout: {
+    showScrollIndicator: boolean;
+    showFloatingElements: boolean;
+    headerStyle: 'minimal' | 'detailed' | 'centered';
+    footerStyle: 'simple' | 'detailed';
+  };
+  seo: {
+    metaTitle: string;
+    metaDescription: string;
+    keywords: string[];
+  };
 }
 
 const defaultContent: WebsiteContent = {
@@ -89,24 +106,6 @@ const defaultContent: WebsiteContent = {
       arabic: '﴿ وَالسَّمَاءَ بَنَيْنَاهَا بِأَيْدٍ وَإِنَّا لَمُوسِعُونَ ﴾',
       translation: 'والسماء بنيناها بأيد وإنا لموسعون',
       source: 'سورة الذاريات - الآية 47'
-    },
-    {
-      id: 4,
-      arabic: '﴿ وَأَنزَلْنَا مِنَ السَّمَاءِ مَاءً فَأَنبَتْنَا بِهِ مِن كُلِّ زَوْجٍ كَرِيمٍ ﴾',
-      translation: 'وأنزلنا من السماء ماء فأنبتنا به من كل زوج كريم',
-      source: 'سورة لقمان - الآية 10'
-    },
-    {
-      id: 5,
-      arabic: '﴿ وَسَخَّرَ لَكُمُ اللَّيْلَ وَالنَّهَارَ وَالشَّمْسَ وَالْقَمَرَ وَالنُّجُومُ ﴾',
-      translation: 'وسخر لكم الليل والنهار والشمس والقمر والنجوم',
-      source: 'سورة النحل - الآية 12'
-    },
-    {
-      id: 6,
-      arabic: '﴿ أَفَلَا يَنظُرُونَ إِلَى الْإِبِلِ كَيْفَ خُلِقَتْ ﴾',
-      translation: 'أفلا ينظرون إلى الإبل كيف خلقت',
-      source: 'سورة الغاشية - الآية 17'
     }
   ],
   cosmicExploration: {
@@ -125,65 +124,19 @@ const defaultContent: WebsiteContent = {
         description: 'وجعلنا من الماء كل شيء حي - الإعجاز في خلق الحياة',
         icon: '💧',
         color: 'from-blue-800 to-teal-700'
-      },
-      {
-        id: 3,
-        title: 'الجبال والأرض',
-        description: 'والجبال أرساها - حكمة الله في استقرار الأرض',
-        icon: '🏔️',
-        color: 'from-gray-700 to-blue-800'
-      },
-      {
-        id: 4,
-        title: 'النبات والأشجار',
-        description: 'فأنبتنا به من كل زوج كريم - معجزة التنوع النباتي',
-        icon: '🌲',
-        color: 'from-green-800 to-emerald-700'
-      },
-      {
-        id: 5,
-        title: 'الليل والنهار',
-        description: 'وجعلنا الليل والنهار آيتين - نظام دقيق لا يختل',
-        icon: '🌙',
-        color: 'from-indigo-900 to-purple-800'
-      },
-      {
-        id: 6,
-        title: 'البحار والمحيطات',
-        description: 'وهو الذي سخر البحر - خزائن المياه في الأرض',
-        icon: '🌊',
-        color: 'from-cyan-800 to-blue-900'
       }
     ]
   },
   about: {
     title: 'الشيخ عاصم فايد',
     subtitle: 'معلم القرآن الكريم والإعجاز العلمي',
-    description: 'خريج الأزهر الشريف، متخصص في تفسير القرآن الكريم والإعجاز العلمي. أهدف إلى ربط آيات الله في الكتاب بآيات الله في الكون لفهم أعمق للدين.',
+    description: 'خريج الأزهر الشريف، متخصص في تفسير القرآن الكريم والإعجاز العلمي.',
     achievements: [
       {
         id: 1,
         title: 'إجازة في القرآن الكريم',
         description: 'حاصل على إجازة في القراءات العشر من الأزهر الشريف',
         icon: '📖'
-      },
-      {
-        id: 2,
-        title: 'دكتوراه في التفسير',
-        description: 'متخصص في التفسير العلمي والإعجاز القرآني',
-        icon: '🎓'
-      },
-      {
-        id: 3,
-        title: 'مؤلف ومحاضر',
-        description: 'له عدة مؤلفات في الإعجاز العلمي والتفسير المعاصر',
-        icon: '✍️'
-      },
-      {
-        id: 4,
-        title: 'باحث في الإعجاز',
-        description: 'متخصص في ربط الاكتشافات العلمية بالآيات القرآنية',
-        icon: '🔬'
       }
     ]
   },
@@ -192,33 +145,9 @@ const defaultContent: WebsiteContent = {
       id: 1,
       title: 'تفسير القرآن الكريم',
       description: 'دروس تفسير معاصرة تربط بين الآيات والعلوم الحديثة',
-      features: ['تفسير مبسط', 'ربط بالعلوم', 'أمثلة معاصرة', 'تطبيق عملي'],
+      features: ['تفسير مبسط', 'ربط بالعلوم', 'أمثلة معاصرة'],
       icon: '📚',
       color: 'from-emerald-600 to-teal-600'
-    },
-    {
-      id: 2,
-      title: 'الإعجاز العلمي',
-      description: 'كشف المعجزات العلمية في القرآن الكريم',
-      features: ['معجزات فلكية', 'إعجاز طبيعي', 'أبحاث حديثة', 'أدلة علمية'],
-      icon: '🔬',
-      color: 'from-blue-600 to-indigo-600'
-    },
-    {
-      id: 3,
-      title: 'تحفيظ وتجويد',
-      description: 'برامج تحفيظ القرآن مع أحكام التجويد',
-      features: ['طرق حديثة', 'مراجعة منتظمة', 'متابعة فردية', 'إجازات معتمدة'],
-      icon: '🕌',
-      color: 'from-purple-600 to-pink-600'
-    },
-    {
-      id: 4,
-      title: 'محاضرات ودورات',
-      description: 'محاضرات في الإعجاز ودورات تدريبية',
-      features: ['محاضرات عامة', 'دورات متخصصة', 'ورش عمل', 'استشارات'],
-      icon: '🎤',
-      color: 'from-yellow-600 to-orange-600'
     }
   ],
   socialMedia: {
@@ -231,6 +160,23 @@ const defaultContent: WebsiteContent = {
     phone: '+20 100 000 0000',
     email: 'info@sheikhassem.com',
     address: 'القاهرة، مصر'
+  },
+  design: {
+    backgroundType: 'cosmic',
+    animationSpeed: 'normal',
+    enableParticles: true,
+    enableFloatingElements: true
+  },
+  layout: {
+    showScrollIndicator: true,
+    showFloatingElements: true,
+    headerStyle: 'centered',
+    footerStyle: 'detailed'
+  },
+  seo: {
+    metaTitle: 'الشيخ عاصم فايد - معلم القرآن الكريم والإعجاز العلمي',
+    metaDescription: 'استكشف عظمة الخلق من خلال آيات الله في الكون والطبيعة مع الشيخ عاصم فايد',
+    keywords: ['القرآن الكريم', 'الإعجاز العلمي', 'التفسير', 'الشيخ عاصم فايد']
   }
 };
 
@@ -253,6 +199,34 @@ export const useContentManager = () => {
     }
   };
 
+  const resetToDefault = () => {
+    setContent(defaultContent);
+    localStorage.setItem('websiteContent', JSON.stringify(defaultContent));
+  };
+
+  const exportContent = () => {
+    const dataStr = JSON.stringify(content, null, 2);
+    const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+    const exportFileDefaultName = 'website-content.json';
+    const linkElement = document.createElement('a');
+    linkElement.setAttribute('href', dataUri);
+    linkElement.setAttribute('download', exportFileDefaultName);
+    linkElement.click();
+  };
+
+  const importContent = (file: File) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const importedContent = JSON.parse(e.target?.result as string);
+        updateContent(importedContent);
+      } catch (error) {
+        console.error('Error importing content:', error);
+      }
+    };
+    reader.readAsText(file);
+  };
+
   useEffect(() => {
     const root = document.documentElement;
     root.style.setProperty('--primary-color', content.colors.primary);
@@ -260,5 +234,11 @@ export const useContentManager = () => {
     root.style.setProperty('--accent-color', content.colors.accent);
   }, [content.colors]);
 
-  return { content, updateContent };
+  return { 
+    content, 
+    updateContent, 
+    resetToDefault, 
+    exportContent, 
+    importContent 
+  };
 };
