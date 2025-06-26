@@ -6,6 +6,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useContentManager } from '../hooks/useContentManager';
+import { useToast } from '@/hooks/use-toast';
 import { 
   LogOut, 
   Settings, 
@@ -14,32 +16,24 @@ import {
   Palette, 
   Book,
   Home,
-  Eye
+  Eye,
+  Save,
+  Plus,
+  Trash2,
+  Route
 } from 'lucide-react';
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
+  const { content, updateContent } = useContentManager();
+  const { toast } = useToast();
   const [activeTab, setActiveTab] = useState('content');
 
-  // Content Management State
-  const [heroTitle, setHeroTitle] = useState('الشيخ عاصم فايد');
-  const [heroSubtitle, setHeroSubtitle] = useState('رحلة روحانية نحو الهدوء والسكينة');
-  const [heroDescription, setHeroDescription] = useState('مرحباً بكم في عالم من السكينة والهدوء الروحاني');
-
-  // Colors State
-  const [primaryColor, setPrimaryColor] = useState('#1e3a8a');
-  const [secondaryColor, setSecondaryColor] = useState('#fbbf24');
-  const [accentColor, setAccentColor] = useState('#059669');
-
-  // Wisdom Quotes State
-  const [wisdomQuotes, setWisdomQuotes] = useState([
-    {
-      id: 1,
-      arabic: '﴿ وَمَن يَتَّقِ اللَّهَ يَجْعَل لَّهُ مَخْرَجًا ﴾',
-      translation: 'ومن يتق الله يجعل له مخرجاً',
-      source: 'سورة الطلاق - الآية 2'
-    }
-  ]);
+  // Local state for editing
+  const [heroData, setHeroData] = useState(content.hero);
+  const [colorsData, setColorsData] = useState(content.colors);
+  const [wisdomQuotes, setWisdomQuotes] = useState(content.wisdomQuotes);
+  const [journeyData, setJourneyData] = useState(content.spiritualJourney);
 
   useEffect(() => {
     const isLoggedIn = localStorage.getItem('isAdminLoggedIn');
@@ -48,19 +42,31 @@ const AdminDashboard = () => {
     }
   }, [navigate]);
 
+  // Update local state when content changes
+  useEffect(() => {
+    setHeroData(content.hero);
+    setColorsData(content.colors);
+    setWisdomQuotes(content.wisdomQuotes);
+    setJourneyData(content.spiritualJourney);
+  }, [content]);
+
   const handleLogout = () => {
     localStorage.removeItem('isAdminLoggedIn');
     navigate('/');
   };
 
-  const saveContent = () => {
-    const contentData = {
-      hero: { title: heroTitle, subtitle: heroSubtitle, description: heroDescription },
-      colors: { primary: primaryColor, secondary: secondaryColor, accent: accentColor },
-      wisdomQuotes
-    };
-    localStorage.setItem('websiteContent', JSON.stringify(contentData));
-    alert('تم حفظ التغييرات بنجاح!');
+  const saveAllChanges = () => {
+    updateContent({
+      hero: heroData,
+      colors: colorsData,
+      wisdomQuotes,
+      spiritualJourney: journeyData
+    });
+    
+    toast({
+      title: "تم الحفظ بنجاح! ✅",
+      description: "تم حفظ جميع التغييرات وتطبيقها على الموقع",
+    });
   };
 
   const addNewQuote = () => {
@@ -83,6 +89,35 @@ const AdminDashboard = () => {
     setWisdomQuotes(wisdomQuotes.filter(quote => quote.id !== id));
   };
 
+  const addNewStage = () => {
+    const newStage = {
+      id: Date.now(),
+      title: '',
+      description: '',
+      icon: '✨'
+    };
+    setJourneyData({
+      ...journeyData,
+      stages: [...journeyData.stages, newStage]
+    });
+  };
+
+  const updateStage = (id: number, field: string, value: string) => {
+    setJourneyData({
+      ...journeyData,
+      stages: journeyData.stages.map(stage => 
+        stage.id === id ? { ...stage, [field]: value } : stage
+      )
+    });
+  };
+
+  const deleteStage = (id: number) => {
+    setJourneyData({
+      ...journeyData,
+      stages: journeyData.stages.filter(stage => stage.id !== id)
+    });
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100" dir="rtl">
       {/* Header */}
@@ -93,7 +128,7 @@ const AdminDashboard = () => {
           </h1>
           <div className="flex gap-3">
             <Button
-              onClick={() => navigate('/')}
+              onClick={() => window.open('/', '_blank')}
               variant="outline"
               className="flex items-center gap-2"
             >
@@ -114,10 +149,14 @@ const AdminDashboard = () => {
 
       <div className="container mx-auto px-6 py-8">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid grid-cols-4 w-full max-w-2xl mx-auto">
+          <TabsList className="grid grid-cols-5 w-full max-w-3xl mx-auto">
             <TabsTrigger value="content" className="flex items-center gap-2">
               <Type className="w-4 h-4" />
               المحتوى
+            </TabsTrigger>
+            <TabsTrigger value="journey" className="flex items-center gap-2">
+              <Route className="w-4 h-4" />
+              الرحلة الروحانية
             </TabsTrigger>
             <TabsTrigger value="wisdom" className="flex items-center gap-2">
               <Book className="w-4 h-4" />
@@ -146,28 +185,96 @@ const AdminDashboard = () => {
                 <div>
                   <label className="block text-sm font-medium mb-2">العنوان الرئيسي</label>
                   <Input
-                    value={heroTitle}
-                    onChange={(e) => setHeroTitle(e.target.value)}
+                    value={heroData.title}
+                    onChange={(e) => setHeroData({...heroData, title: e.target.value})}
                     className="font-amiri text-lg"
                   />
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-2">العنوان الفرعي</label>
                   <Input
-                    value={heroSubtitle}
-                    onChange={(e) => setHeroSubtitle(e.target.value)}
+                    value={heroData.subtitle}
+                    onChange={(e) => setHeroData({...heroData, subtitle: e.target.value})}
                     className="font-cairo"
                   />
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-2">الوصف</label>
                   <Textarea
-                    value={heroDescription}
-                    onChange={(e) => setHeroDescription(e.target.value)}
+                    value={heroData.description}
+                    onChange={(e) => setHeroData({...heroData, description: e.target.value})}
                     rows={4}
                     className="font-cairo"
                   />
                 </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Journey Management */}
+          <TabsContent value="journey" className="space-y-6">
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between">
+                <CardTitle className="flex items-center gap-2">
+                  <Route className="w-5 h-5" />
+                  إدارة مراحل الرحلة الروحانية
+                </CardTitle>
+                <Button onClick={addNewStage} className="bg-gold-400 hover:bg-gold-500">
+                  <Plus className="w-4 h-4 ml-2" />
+                  إضافة مرحلة جديدة
+                </Button>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium mb-2">عنوان القسم</label>
+                  <Input
+                    value={journeyData.title}
+                    onChange={(e) => setJourneyData({...journeyData, title: e.target.value})}
+                    className="font-cairo text-lg mb-6"
+                  />
+                </div>
+                
+                {journeyData.stages.map((stage, index) => (
+                  <div key={stage.id} className="border rounded-lg p-4 space-y-3">
+                    <div className="flex items-center justify-between mb-3">
+                      <h4 className="font-bold text-lg">المرحلة {index + 1}</h4>
+                      <Button
+                        onClick={() => deleteStage(stage.id)}
+                        variant="destructive"
+                        size="sm"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                      <div>
+                        <label className="block text-sm font-medium mb-2">الأيقونة</label>
+                        <Input
+                          value={stage.icon}
+                          onChange={(e) => updateStage(stage.id, 'icon', e.target.value)}
+                          className="text-center text-2xl"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium mb-2">العنوان</label>
+                        <Input
+                          value={stage.title}
+                          onChange={(e) => updateStage(stage.id, 'title', e.target.value)}
+                          className="font-cairo"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium mb-2">الوصف</label>
+                        <Textarea
+                          value={stage.description}
+                          onChange={(e) => updateStage(stage.id, 'description', e.target.value)}
+                          className="font-cairo"
+                          rows={2}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </CardContent>
             </Card>
           </TabsContent>
@@ -181,6 +288,7 @@ const AdminDashboard = () => {
                   إدارة آيات الحكمة
                 </CardTitle>
                 <Button onClick={addNewQuote} className="bg-gold-400 hover:bg-gold-500">
+                  <Plus className="w-4 h-4 ml-2" />
                   إضافة آية جديدة
                 </Button>
               </CardHeader>
@@ -219,7 +327,7 @@ const AdminDashboard = () => {
                           variant="destructive"
                           size="sm"
                         >
-                          حذف
+                          <Trash2 className="w-4 h-4" />
                         </Button>
                       </div>
                     </div>
@@ -245,13 +353,13 @@ const AdminDashboard = () => {
                     <div className="flex gap-2">
                       <input
                         type="color"
-                        value={primaryColor}
-                        onChange={(e) => setPrimaryColor(e.target.value)}
+                        value={colorsData.primary}
+                        onChange={(e) => setColorsData({...colorsData, primary: e.target.value})}
                         className="w-12 h-10 rounded border"
                       />
                       <Input
-                        value={primaryColor}
-                        onChange={(e) => setPrimaryColor(e.target.value)}
+                        value={colorsData.primary}
+                        onChange={(e) => setColorsData({...colorsData, primary: e.target.value})}
                         className="flex-1"
                       />
                     </div>
@@ -261,13 +369,13 @@ const AdminDashboard = () => {
                     <div className="flex gap-2">
                       <input
                         type="color"
-                        value={secondaryColor}
-                        onChange={(e) => setSecondaryColor(e.target.value)}
+                        value={colorsData.secondary}
+                        onChange={(e) => setColorsData({...colorsData, secondary: e.target.value})}
                         className="w-12 h-10 rounded border"
                       />
                       <Input
-                        value={secondaryColor}
-                        onChange={(e) => setSecondaryColor(e.target.value)}
+                        value={colorsData.secondary}
+                        onChange={(e) => setColorsData({...colorsData, secondary: e.target.value})}
                         className="flex-1"
                       />
                     </div>
@@ -277,13 +385,13 @@ const AdminDashboard = () => {
                     <div className="flex gap-2">
                       <input
                         type="color"
-                        value={accentColor}
-                        onChange={(e) => setAccentColor(e.target.value)}
+                        value={colorsData.accent}
+                        onChange={(e) => setColorsData({...colorsData, accent: e.target.value})}
                         className="w-12 h-10 rounded border"
                       />
                       <Input
-                        value={accentColor}
-                        onChange={(e) => setAccentColor(e.target.value)}
+                        value={colorsData.accent}
+                        onChange={(e) => setColorsData({...colorsData, accent: e.target.value})}
                         className="flex-1"
                       />
                     </div>
@@ -316,11 +424,11 @@ const AdminDashboard = () => {
         {/* Save Button */}
         <div className="fixed bottom-6 left-6 z-50">
           <Button
-            onClick={saveContent}
+            onClick={saveAllChanges}
             size="lg"
             className="bg-green-600 hover:bg-green-700 text-white shadow-lg"
           >
-            <Settings className="w-5 h-5 ml-2" />
+            <Save className="w-5 h-5 ml-2" />
             حفظ جميع التغييرات
           </Button>
         </div>

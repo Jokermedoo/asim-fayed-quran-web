@@ -1,46 +1,21 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useContentManager } from '../hooks/useContentManager';
 import { useScrollAnimation } from '../hooks/useScrollAnimation';
 
-const wisdomQuotes = [
-  {
-    id: 1,
-    arabic: '﴿ وَمَن يَتَّقِ اللَّهَ يَجْعَل لَّهُ مَخْرَجًا ﴾',
-    translation: 'ومن يتق الله يجعل له مخرجاً',
-    source: 'سورة الطلاق - الآية 2'
-  },
-  {
-    id: 2,
-    arabic: '﴿ وَلَا تَيْأَسُوا مِن رَّوْحِ اللَّهِ إِنَّهُ لَا يَيْأَسُ مِن رَّوْحِ اللَّهِ إِلَّا الْقَوْمُ الْكَافِرُونَ ﴾',
-    translation: 'لا تيأسوا من روح الله',
-    source: 'سورة يوسف - الآية 87'
-  },
-  {
-    id: 3,
-    arabic: '﴿ فَإِنَّ مَعَ الْعُسْرِ يُسْرًا ﴾',
-    translation: 'فإن مع العسر يسراً',
-    source: 'سورة الشرح - الآية 6'
-  },
-  {
-    id: 4,
-    arabic: '﴿ وَهُوَ مَعَكُمْ أَيْنَ مَا كُنتُمْ ﴾',
-    translation: 'وهو معكم أين ما كنتم',
-    source: 'سورة الحديد - الآية 4'
-  }
-];
-
 const IslamicWisdom = () => {
+  const { content } = useContentManager();
   const [currentQuote, setCurrentQuote] = useState(0);
   const { ref, controls } = useScrollAnimation(0.2);
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setCurrentQuote((prev) => (prev + 1) % wisdomQuotes.length);
-    }, 8000); // Change every 8 seconds
+      setCurrentQuote((prev) => (prev + 1) % content.wisdomQuotes.length);
+    }, 8000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [content.wisdomQuotes.length]);
 
   return (
     <section className="py-20 bg-gradient-to-br from-navy-blue-900 via-emerald-800 to-navy-blue-800 relative overflow-hidden">
@@ -105,7 +80,7 @@ const IslamicWisdom = () => {
                 animate={{ opacity: 1 }}
                 transition={{ duration: 1.5, delay: 0.3 }}
               >
-                {wisdomQuotes[currentQuote].arabic}
+                {content.wisdomQuotes[currentQuote]?.arabic}
               </motion.p>
               
               <motion.p 
@@ -114,7 +89,7 @@ const IslamicWisdom = () => {
                 animate={{ opacity: 1 }}
                 transition={{ duration: 1, delay: 0.6 }}
               >
-                {wisdomQuotes[currentQuote].translation}
+                {content.wisdomQuotes[currentQuote]?.translation}
               </motion.p>
               
               <motion.p 
@@ -123,14 +98,14 @@ const IslamicWisdom = () => {
                 animate={{ opacity: 1 }}
                 transition={{ duration: 1, delay: 0.9 }}
               >
-                {wisdomQuotes[currentQuote].source}
+                {content.wisdomQuotes[currentQuote]?.source}
               </motion.p>
             </motion.div>
           </AnimatePresence>
 
           {/* Quote Navigation Dots */}
           <div className="flex justify-center mt-8 space-x-2 space-x-reverse">
-            {wisdomQuotes.map((_, index) => (
+            {content.wisdomQuotes.map((_, index) => (
               <motion.button
                 key={index}
                 onClick={() => setCurrentQuote(index)}
