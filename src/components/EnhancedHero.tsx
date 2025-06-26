@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useContentManager } from '../hooks/useContentManager';
-import InteractiveBackground from './InteractiveBackground';
+import CosmicBackground from './CosmicBackground';
 
 const EnhancedHero = () => {
   const { content } = useContentManager();
@@ -28,37 +28,9 @@ const EnhancedHero = () => {
   }, []);
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900">
-      <InteractiveBackground />
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+      <CosmicBackground />
       
-      {/* Dynamic Background Elements */}
-      <div className="absolute inset-0">
-        {[...Array(8)].map((_, i) => (
-          <motion.div
-            key={i}
-            className="absolute w-96 h-96 rounded-full opacity-10"
-            style={{
-              background: `radial-gradient(circle, ${
-                ['#fbbf24', '#059669', '#3b82f6', '#ec4899'][i % 4]
-              } 0%, transparent 70%)`,
-              top: `${Math.random() * 100}%`,
-              left: `${Math.random() * 100}%`,
-            }}
-            animate={{
-              scale: [0.8, 1.2, 0.8],
-              opacity: [0.1, 0.3, 0.1],
-              x: [0, 100, 0],
-              y: [0, -100, 0],
-            }}
-            transition={{
-              duration: 8 + Math.random() * 4,
-              repeat: Infinity,
-              delay: Math.random() * 2,
-            }}
-          />
-        ))}
-      </div>
-
       {/* Content */}
       <motion.div 
         className="relative z-10 text-center px-6 max-w-6xl mx-auto"
@@ -112,6 +84,7 @@ const EnhancedHero = () => {
           transition={{ duration: 1, delay: 0.9 }}
         >
           <motion.button
+            onClick={() => navigate('/services')}
             className="relative group bg-gradient-to-r from-gold-400 via-emerald-500 to-blue-500 text-white px-10 py-5 rounded-full font-cairo font-bold text-xl shadow-2xl overflow-hidden"
             whileHover={{ 
               scale: 1.1,
@@ -125,20 +98,7 @@ const EnhancedHero = () => {
               animate={{ x: [-200, 400] }}
               transition={{ duration: 2, repeat: Infinity, repeatDelay: 1 }}
             />
-            <span className="relative z-10">ابدأ رحلتك الروحانية</span>
-            
-            {/* Particle explosion on hover */}
-            <motion.div
-              className="absolute inset-0 pointer-events-none"
-              whileHover={{
-                background: [
-                  'radial-gradient(circle at 50% 50%, rgba(255,255,255,0) 0%, rgba(255,255,255,0) 100%)',
-                  'radial-gradient(circle at 50% 50%, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 70%)',
-                  'radial-gradient(circle at 50% 50%, rgba(255,255,255,0) 0%, rgba(255,255,255,0) 100%)'
-                ]
-              }}
-              transition={{ duration: 0.5 }}
-            />
+            <span className="relative z-10">ابدأ رحلتك التعليمية</span>
           </motion.button>
           
           <motion.button
@@ -203,7 +163,6 @@ const EnhancedHero = () => {
             />
           </div>
           
-          {/* Glow effect */}
           <motion.div
             className="absolute inset-0 w-8 h-14 border-3 border-gold-400 rounded-full"
             animate={{
