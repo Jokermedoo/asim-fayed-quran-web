@@ -6,7 +6,7 @@ import EnhancedIslamicWisdom from '../components/EnhancedIslamicWisdom';
 import SpiritualJourney from '../components/SpiritualJourney';
 import Footer from '../components/Footer';
 import WhatsAppButton from '../components/WhatsAppButton';
-import AdminAccess from '../components/AdminAccess';
+import SecureAdminAccess from '../components/SecureAdminAccess';
 import QuickAdminPanel from '../components/QuickAdminPanel';
 import InteractiveBackground from '../components/InteractiveBackground';
 import BackgroundSlider from '../components/BackgroundSlider';
@@ -23,7 +23,7 @@ const Index = () => {
       
       <div className="relative z-10">
         <Navbar />
-        <AdminAccess />
+        <SecureAdminAccess />
         <EnhancedHero />
         <EnhancedIslamicWisdom />
         <SpiritualJourney />

@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -9,14 +9,27 @@ import {
   Eye, 
   Palette, 
   Type, 
-  Save,
   X,
-  Maximize2
+  Maximize2,
+  LogOut
 } from 'lucide-react';
 
 const QuickAdminPanel = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [hasAdminAccess, setHasAdminAccess] = useState(false);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const adminAccess = localStorage.getItem('adminAccess');
+    setHasAdminAccess(adminAccess === 'granted');
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem('adminAccess');
+    setHasAdminAccess(false);
+    setIsOpen(false);
+    window.location.reload();
+  };
 
   const quickActions = [
     {
@@ -44,6 +57,11 @@ const QuickAdminPanel = () => {
       color: 'bg-orange-600 hover:bg-orange-700'
     }
   ];
+
+  // Only show for admin users
+  if (!hasAdminAccess) {
+    return null;
+  }
 
   return (
     <>
@@ -75,9 +93,19 @@ const QuickAdminPanel = () => {
           >
             <Card className="w-64 bg-white/95 backdrop-blur-lg shadow-2xl border-2 border-white/20">
               <CardContent className="p-4">
-                <div className="flex items-center gap-2 mb-4">
-                  <Maximize2 className="w-5 h-5 text-gray-600" />
-                  <h3 className="font-bold text-gray-800 font-cairo">التحكم السريع</h3>
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-2">
+                    <Maximize2 className="w-5 h-5 text-gray-600" />
+                    <h3 className="font-bold text-gray-800 font-cairo">التحكم السريع</h3>
+                  </div>
+                  <Button
+                    onClick={handleLogout}
+                    variant="ghost"
+                    size="sm"
+                    className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                  >
+                    <LogOut className="w-4 h-4" />
+                  </Button>
                 </div>
                 
                 <div className="space-y-2">
