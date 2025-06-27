@@ -1,23 +1,31 @@
 
-import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, BookOpen, Home, User, Briefcase, MessageCircle } from 'lucide-react';
-import { useLiveContent } from '../hooks/useLiveContent';
+import React, { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
+import { Menu, X, Home, User, BookOpen, Briefcase, MessageCircle } from 'lucide-react';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const { content } = useLiveContent();
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 50);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const navItems = [
-    { id: 'home', label: 'الرئيسية', icon: Home },
-    { id: 'about', label: 'من نحن', icon: User },
-    { id: 'services', label: 'خدماتنا', icon: Briefcase },
-    { id: 'wisdom', label: 'الحكمة', icon: BookOpen },
-    { id: 'journey', label: 'الرحلة الروحية', icon: MessageCircle },
+    { name: 'الرئيسية', href: '#home', icon: Home },
+    { name: 'عني', href: '#about', icon: User },
+    { name: 'الآيات', href: '#wisdom', icon: BookOpen },
+    { name: 'الخدمات', href: '#services', icon: Briefcase },
+    { name: 'التواصل', href: '#contact', icon: MessageCircle },
   ];
 
-  const scrollToSection = (sectionId: string) => {
-    const element = document.getElementById(sectionId);
+  const scrollToSection = (href: string) => {
+    const element = document.querySelector(href);
     if (element) {
       element.scrollIntoView({ behavior: 'smooth' });
       setIsOpen(false);
@@ -25,85 +33,94 @@ const Navbar = () => {
   };
 
   return (
-    <motion.nav 
-      className="fixed top-0 w-full z-50 bg-white/5 backdrop-blur-lg border-b border-white/10"
+    <motion.nav
+      className={`fixed top-0 w-full z-50 transition-all duration-300 ${
+        isScrolled 
+          ? 'bg-white/95 backdrop-blur-md shadow-lg border-b border-gray-200' 
+          : 'bg-transparent'
+      }`}
       initial={{ y: -100 }}
       animate={{ y: 0 }}
-      transition={{ duration: 0.5 }}
+      transition={{ duration: 0.6 }}
     >
-      <div className="container mx-auto px-4">
-        <div className="flex justify-between items-center h-16">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between items-center h-16 lg:h-20">
           {/* Logo */}
-          <motion.div 
-            className="flex items-center gap-3"
+          <motion.div
+            className="flex items-center"
             whileHover={{ scale: 1.05 }}
+            transition={{ duration: 0.2 }}
           >
-            <div className="w-10 h-10 bg-gradient-to-br from-blue-400 to-purple-600 rounded-full flex items-center justify-center">
-              <BookOpen className="w-6 h-6 text-white" />
+            <div className="w-10 h-10 lg:w-12 lg:h-12 bg-gradient-to-r from-gold-500 to-amber-600 rounded-xl flex items-center justify-center mr-3">
+              <span className="text-white font-bold text-lg lg:text-xl">ع</span>
             </div>
-            <div className="text-white">
-              <h2 className="font-bold text-lg">{content.hero.title}</h2>
-            </div>
+            <span className={`font-bold text-lg lg:text-xl font-amiri ${
+              isScrolled ? 'text-gray-800' : 'text-white'
+            }`}>
+              الشيخ عاصم فايد
+            </span>
           </motion.div>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-8">
-            {navItems.map((item) => (
+          <div className="hidden lg:flex items-center space-x-8">
+            {navItems.map((item, index) => (
               <motion.button
-                key={item.id}
-                onClick={() => scrollToSection(item.id)}
-                className="text-white hover:text-blue-300 transition-colors duration-200 flex items-center gap-2"
-                whileHover={{ scale: 1.1 }}
+                key={item.name}
+                onClick={() => scrollToSection(item.href)}
+                className={`flex items-center gap-2 px-4 py-2 rounded-full transition-all duration-300 font-cairo ${
+                  isScrolled
+                    ? 'text-gray-700 hover:text-blue-600 hover:bg-blue-50'
+                    : 'text-white hover:text-gold-300 hover:bg-white/10'
+                }`}
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: index * 0.1 }}
+                whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
                 <item.icon className="w-4 h-4" />
-                {item.label}
+                {item.name}
               </motion.button>
             ))}
           </div>
 
           {/* Mobile Menu Button */}
-          <div className="md:hidden">
-            <motion.button
-              onClick={() => setIsOpen(!isOpen)}
-              className="text-white p-2"
-              whileTap={{ scale: 0.95 }}
-            >
-              {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-            </motion.button>
-          </div>
+          <motion.button
+            onClick={() => setIsOpen(!isOpen)}
+            className={`lg:hidden w-10 h-10 rounded-lg flex items-center justify-center transition-colors duration-300 ${
+              isScrolled
+                ? 'text-gray-700 hover:bg-gray-100'
+                : 'text-white hover:bg-white/10'
+            }`}
+            whileTap={{ scale: 0.95 }}
+          >
+            {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          </motion.button>
         </div>
 
         {/* Mobile Navigation */}
-        <AnimatePresence>
-          {isOpen && (
-            <motion.div
-              className="md:hidden bg-white/10 backdrop-blur-lg rounded-2xl mt-2 p-4 border border-white/20"
-              initial={{ opacity: 0, y: -20, scale: 0.95 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: -20, scale: 0.95 }}
-              transition={{ duration: 0.2 }}
-            >
-              <div className="space-y-2">
-                {navItems.map((item, index) => (
-                  <motion.button
-                    key={item.id}
-                    onClick={() => scrollToSection(item.id)}
-                    className="w-full text-right text-white hover:text-blue-300 transition-colors duration-200 p-3 rounded-lg hover:bg-white/10 flex items-center gap-3"
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: index * 0.1 }}
-                    whileHover={{ x: 5 }}
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    <item.icon className="w-5 h-5" />
-                    {item.label}
-                  </motion.button>
-                ))}
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+        <motion.div
+          className={`lg:hidden overflow-hidden ${isOpen ? 'max-h-96' : 'max-h-0'}`}
+          initial={false}
+          animate={{ height: isOpen ? 'auto' : 0 }}
+          transition={{ duration: 0.3 }}
+        >
+          <div className="py-4 space-y-2 bg-white/95 backdrop-blur-md rounded-lg mt-2 shadow-lg border border-gray-200">
+            {navItems.map((item, index) => (
+              <motion.button
+                key={item.name}
+                onClick={() => scrollToSection(item.href)}
+                className="w-full flex items-center gap-3 px-6 py-3 text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-colors duration-300 font-cairo"
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: isOpen ? 1 : 0, x: isOpen ? 0 : -20 }}
+                transition={{ duration: 0.3, delay: index * 0.1 }}
+              >
+                <item.icon className="w-5 h-5" />
+                {item.name}
+              </motion.button>
+            ))}
+          </div>
+        </motion.div>
       </div>
     </motion.nav>
   );

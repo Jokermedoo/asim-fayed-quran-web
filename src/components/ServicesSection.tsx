@@ -1,137 +1,197 @@
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { BookOpen, Microscope, Users, Video, Clock, Award } from 'lucide-react';
-import { useLiveContent } from '../hooks/useLiveContent';
+import { BookOpen, GraduationCap, Users, Heart } from 'lucide-react';
+import { supabase } from '../integrations/supabase/client';
 
 const ServicesSection = () => {
-  const { content } = useLiveContent();
+  const [services, setServices] = useState([]);
 
-  const additionalServices = [
-    {
-      id: 3,
-      title: 'دورات تدريبية',
-      description: 'برامج تعليمية شاملة للمعلمين والدعاة',
-      features: ['شهادات معتمدة', 'تدريب عملي', 'متابعة مستمرة'],
-      icon: '🎓',
-      color: 'from-orange-600 to-red-600'
-    },
-    {
-      id: 4,
-      title: 'استشارات علمية',
-      description: 'إرشاد في مجال الإعجاز العلمي والتفسير',
-      features: ['استشارة شخصية', 'بحوث أكاديمية', 'مراجعة علمية'],
-      icon: '💡',
-      color: 'from-purple-600 to-pink-600'
-    }
-  ];
+  useEffect(() => {
+    const fetchServices = async () => {
+      try {
+        const { data } = await supabase
+          .from('interactive_content')
+          .select('*')
+          .eq('type', 'service')
+          .eq('is_active', true)
+          .order('order_index');
+        
+        if (data && data.length > 0) {
+          setServices(data);
+        } else {
+          // Default services if none in database
+          setServices([
+            {
+              id: 1,
+              data: {
+                icon: '📖',
+                description: 'تعليم وتحفيظ القرآن الكريم بالتجويد الصحيح',
+                features: ['تعليم التجويد', 'الحفظ المتقن', 'المراجعة الدورية'],
+                color: 'from-emerald-600 to-teal-600'
+              },
+              title: 'تحفيظ القرآن الكريم'
+            },
+            {
+              id: 2,
+              data: {
+                icon: '✍️',
+                description: 'تعليم اللغة العربية وقواعدها وبلاغتها',
+                features: ['النحو والصرف', 'البلاغة', 'الإعراب'],
+                color: 'from-blue-600 to-indigo-600'
+              },
+              title: 'دروس اللغة العربية'
+            }
+          ]);
+        }
+      } catch (error) {
+        console.log('Using default services');
+      }
+    };
 
-  const allServices = [...content.services, ...additionalServices];
+    fetchServices();
+  }, []);
 
-  const serviceIcons = {
-    '📚': BookOpen,
-    '🔬': Microscope,
-    '🎓': Users,
-    '💡': Award
+  const iconMap = {
+    '📖': BookOpen,
+    '✍️': GraduationCap,
+    '👥': Users,
+    '❤️': Heart
   };
 
   return (
-    <div className="container mx-auto px-4 max-w-6xl">
-      <div className="text-center mb-16">
-        <motion.h2 
-          className="text-4xl md:text-5xl font-bold text-white mb-6"
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          viewport={{ once: true }}
-        >
-          خدماتنا المميزة
-        </motion.h2>
-        <motion.p 
-          className="text-xl text-gray-300 max-w-3xl mx-auto"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.2 }}
-          viewport={{ once: true }}
-        >
-          نقدم مجموعة متنوعة من الخدمات التعليمية والاستشارية في مجال القرآن الكريم والإعجاز العلمي
-        </motion.p>
+    <div className="py-20 bg-gradient-to-br from-gray-50 to-blue-50 relative overflow-hidden">
+      {/* Background Elements */}
+      <div className="absolute inset-0 opacity-5">
+        <div className="absolute top-20 left-10 w-32 h-32 bg-blue-600 rounded-full blur-3xl" />
+        <div className="absolute bottom-20 right-10 w-40 h-40 bg-purple-600 rounded-full blur-3xl" />
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        {allServices.map((service, index) => {
-          const IconComponent = serviceIcons[service.icon] || BookOpen;
-          
-          return (
-            <motion.div
-              key={service.id}
-              className={`bg-gradient-to-br ${service.color} rounded-3xl p-8 text-white relative overflow-hidden group hover:shadow-2xl transition-all duration-500`}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: index * 0.1 }}
-              viewport={{ once: true }}
-              whileHover={{ scale: 1.02 }}
-            >
-              {/* Background Pattern */}
-              <div className="absolute inset-0 opacity-10">
-                <div className="absolute top-0 right-0 w-32 h-32 bg-white rounded-full -translate-y-16 translate-x-16"></div>
-                <div className="absolute bottom-0 left-0 w-24 h-24 bg-white rounded-full translate-y-12 -translate-x-12"></div>
-              </div>
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div className="max-w-6xl mx-auto">
+          {/* Section Header */}
+          <motion.div
+            className="text-center mb-16"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true }}
+          >
+            <h2 className="text-4xl lg:text-5xl font-bold text-gray-800 mb-6 font-amiri">
+              الخدمات التعليمية
+            </h2>
+            <div className="w-24 h-1 bg-gradient-to-r from-gold-500 to-amber-500 mx-auto mb-8"></div>
+            <p className="text-xl text-gray-600 font-cairo max-w-3xl mx-auto">
+              أقدم خدمات تعليمية متنوعة في مجال القرآن الكريم واللغة العربية والعلوم الشرعية
+            </p>
+          </motion.div>
 
-              <div className="relative z-10">
-                <div className="flex items-center gap-4 mb-6">
-                  <div className="text-4xl">{service.icon}</div>
-                  <IconComponent className="w-8 h-8" />
-                </div>
-                
-                <h3 className="text-2xl font-bold mb-4">{service.title}</h3>
-                <p className="text-white/90 mb-6 leading-relaxed">{service.description}</p>
-                
-                <div className="space-y-3">
-                  <h4 className="font-semibold text-lg mb-3">المميزات:</h4>
-                  {service.features.map((feature, featureIndex) => (
-                    <div key={featureIndex} className="flex items-center gap-3">
-                      <div className="w-2 h-2 bg-white rounded-full"></div>
-                      <span className="text-white/90">{feature}</span>
+          {/* Services Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {services.map((service, index) => {
+              const IconComponent = iconMap[service.data.icon] || BookOpen;
+              
+              return (
+                <motion.div
+                  key={service.id}
+                  className="group relative"
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: index * 0.1 }}
+                  viewport={{ once: true }}
+                >
+                  <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-500 border border-gray-100 group-hover:-translate-y-2 h-full">
+                    {/* Service Icon */}
+                    <div className={`w-16 h-16 rounded-xl bg-gradient-to-r ${service.data.color || 'from-blue-600 to-indigo-600'} flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300`}>
+                      <IconComponent className="w-8 h-8 text-white" />
                     </div>
-                  ))}
-                </div>
 
-                <div className="mt-8 pt-6 border-t border-white/20">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <Clock className="w-4 h-4" />
-                      <span className="text-sm">متاح الآن</span>
-                    </div>
-                    <button className="bg-white/20 hover:bg-white/30 px-4 py-2 rounded-full text-sm font-medium transition-colors">
-                      تعرف أكثر
-                    </button>
+                    {/* Service Title */}
+                    <h3 className="text-2xl font-bold text-gray-800 mb-4 font-cairo">
+                      {service.title}
+                    </h3>
+
+                    {/* Service Description */}
+                    <p className="text-gray-600 mb-6 font-cairo leading-relaxed">
+                      {service.data.description}
+                    </p>
+
+                    {/* Service Features */}
+                    {service.data.features && service.data.features.length > 0 && (
+                      <div className="space-y-2">
+                        <h4 className="text-sm font-bold text-gray-800 mb-3 font-cairo">
+                          المميزات الرئيسية:
+                        </h4>
+                        <ul className="space-y-2">
+                          {service.data.features.map((feature, featureIndex) => (
+                            <li key={featureIndex} className="flex items-center text-sm text-gray-600 font-cairo">
+                              <div className="w-2 h-2 bg-gradient-to-r from-gold-500 to-amber-500 rounded-full ml-3 flex-shrink-0" />
+                              {feature}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+
+                    {/* Hover Effect */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-blue-600/5 to-indigo-600/5 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                   </div>
-                </div>
-              </div>
-            </motion.div>
-          );
-        })}
-      </div>
+                </motion.div>
+              );
+            })}
 
-      {/* Contact Section */}
-      <motion.div
-        className="mt-16 bg-white/5 backdrop-blur-lg rounded-3xl p-8 text-center border border-white/10"
-        initial={{ opacity: 0, y: 30 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8 }}
-        viewport={{ once: true }}
-      >
-        <Video className="w-12 h-12 text-blue-400 mx-auto mb-4" />
-        <h3 className="text-2xl font-bold text-white mb-4">احجز جلستك الآن</h3>
-        <p className="text-gray-300 mb-6 max-w-2xl mx-auto">
-          للحصول على استشارة شخصية أو الانضمام لدوراتنا التدريبية، تواصل معنا عبر الواتساب
-        </p>
-        <button className="bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-full font-medium transition-colors inline-flex items-center gap-2">
-          <span>تواصل معنا</span>
-          <span>📱</span>
-        </button>
-      </motion.div>
+            {/* Add Service Card (visible only when services are few) */}
+            {services.length < 6 && (
+              <motion.div
+                className="group relative"
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: services.length * 0.1 }}
+                viewport={{ once: true }}
+              >
+                <div className="bg-gradient-to-br from-gray-100 to-gray-200 rounded-2xl p-8 h-full flex flex-col items-center justify-center text-center border-2 border-dashed border-gray-300 hover:border-gray-400 transition-colors duration-300">
+                  <div className="w-16 h-16 rounded-xl bg-gray-300 flex items-center justify-center mb-6">
+                    <Heart className="w-8 h-8 text-gray-500" />
+                  </div>
+                  <h3 className="text-xl font-bold text-gray-600 mb-4 font-cairo">
+                    خدمات أخرى
+                  </h3>
+                  <p className="text-gray-500 font-cairo text-sm">
+                    المزيد من الخدمات التعليمية قريباً بإذن الله
+                  </p>
+                </div>
+              </motion.div>
+            )}
+          </div>
+
+          {/* CTA Section */}
+          <motion.div
+            className="text-center mt-16"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+            viewport={{ once: true }}
+          >
+            <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl p-8 lg:p-12 text-white">
+              <h3 className="text-2xl lg:text-3xl font-bold mb-4 font-cairo">
+                هل تريد البدء في رحلة التعلم؟
+              </h3>
+              <p className="text-blue-100 mb-8 font-cairo text-lg">
+                تواصل معي الآن للحصول على استشارة مجانية وبدء رحلتك التعليمية
+              </p>
+              <motion.a
+                href="#contact"
+                className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-gold-500 to-amber-600 text-white rounded-full font-bold text-lg shadow-lg hover:shadow-xl transition-all duration-300"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <Heart className="w-5 h-5 ml-2" />
+                تواصل معي الآن
+              </motion.a>
+            </div>
+          </motion.div>
+        </div>
+      </div>
     </div>
   );
 };

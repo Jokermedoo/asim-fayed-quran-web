@@ -9,155 +9,188 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      admin_users: {
+      admin_activity: {
         Row: {
+          action: string
           created_at: string | null
-          email: string
           id: string
-          last_login: string | null
-          name: string
-          password_hash: string
-          role: string | null
+          ip_address: string | null
+          new_data: Json | null
+          old_data: Json | null
+          section: string | null
+          user_agent: string | null
         }
         Insert: {
+          action: string
           created_at?: string | null
-          email: string
           id?: string
-          last_login?: string | null
-          name: string
-          password_hash: string
-          role?: string | null
+          ip_address?: string | null
+          new_data?: Json | null
+          old_data?: Json | null
+          section?: string | null
+          user_agent?: string | null
         }
         Update: {
+          action?: string
           created_at?: string | null
-          email?: string
           id?: string
-          last_login?: string | null
-          name?: string
-          password_hash?: string
-          role?: string | null
+          ip_address?: string | null
+          new_data?: Json | null
+          old_data?: Json | null
+          section?: string | null
+          user_agent?: string | null
         }
         Relationships: []
       }
-      company_info: {
+      design_settings: {
         Row: {
-          address: string | null
+          category: string
           created_at: string | null
-          description: string | null
-          email: string | null
-          facebook_url: string | null
           id: string
-          instagram_url: string | null
-          name: string
-          phone: string | null
+          is_active: boolean | null
+          settings: Json
           updated_at: string | null
-          website: string | null
-          whatsapp: string | null
-          working_hours: string | null
-          youtube_url: string | null
         }
         Insert: {
-          address?: string | null
+          category: string
           created_at?: string | null
-          description?: string | null
-          email?: string | null
-          facebook_url?: string | null
           id?: string
-          instagram_url?: string | null
-          name: string
-          phone?: string | null
+          is_active?: boolean | null
+          settings?: Json
           updated_at?: string | null
-          website?: string | null
-          whatsapp?: string | null
-          working_hours?: string | null
-          youtube_url?: string | null
         }
         Update: {
-          address?: string | null
+          category?: string
           created_at?: string | null
-          description?: string | null
-          email?: string | null
-          facebook_url?: string | null
           id?: string
-          instagram_url?: string | null
-          name?: string
-          phone?: string | null
+          is_active?: boolean | null
+          settings?: Json
           updated_at?: string | null
-          website?: string | null
-          whatsapp?: string | null
-          working_hours?: string | null
-          youtube_url?: string | null
         }
         Relationships: []
       }
-      gallery_items: {
+      interactive_content: {
         Row: {
-          category: string | null
           created_at: string | null
-          description: string | null
-          featured: boolean | null
+          data: Json
           id: string
-          image_url: string | null
+          is_active: boolean | null
+          order_index: number | null
+          title: string
+          type: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          data?: Json
+          id?: string
+          is_active?: boolean | null
+          order_index?: number | null
+          title: string
+          type: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          data?: Json
+          id?: string
+          is_active?: boolean | null
+          order_index?: number | null
+          title?: string
+          type?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      media_assets: {
+        Row: {
+          alt_text: string | null
+          created_at: string | null
+          file_path: string | null
+          id: string
+          metadata: Json | null
+          name: string
+          type: string
+          url: string | null
+        }
+        Insert: {
+          alt_text?: string | null
+          created_at?: string | null
+          file_path?: string | null
+          id?: string
+          metadata?: Json | null
+          name: string
+          type: string
+          url?: string | null
+        }
+        Update: {
+          alt_text?: string | null
+          created_at?: string | null
+          file_path?: string | null
+          id?: string
+          metadata?: Json | null
+          name?: string
+          type?: string
+          url?: string | null
+        }
+        Relationships: []
+      }
+      sections: {
+        Row: {
+          content: Json
+          created_at: string | null
+          id: string
+          is_visible: boolean | null
+          name: string
+          order_index: number | null
           title: string
           updated_at: string | null
         }
         Insert: {
-          category?: string | null
+          content?: Json
           created_at?: string | null
-          description?: string | null
-          featured?: boolean | null
           id?: string
-          image_url?: string | null
+          is_visible?: boolean | null
+          name: string
+          order_index?: number | null
           title: string
           updated_at?: string | null
         }
         Update: {
-          category?: string | null
+          content?: Json
           created_at?: string | null
-          description?: string | null
-          featured?: boolean | null
           id?: string
-          image_url?: string | null
+          is_visible?: boolean | null
+          name?: string
+          order_index?: number | null
           title?: string
           updated_at?: string | null
         }
         Relationships: []
       }
-      services: {
+      website_settings: {
         Row: {
+          content: Json
           created_at: string | null
-          description: string | null
-          features: string[] | null
-          gradient: string | null
-          icon: string | null
           id: string
-          popular: boolean | null
-          price: string | null
-          title: string
+          is_active: boolean | null
+          section_name: string
           updated_at: string | null
         }
         Insert: {
+          content?: Json
           created_at?: string | null
-          description?: string | null
-          features?: string[] | null
-          gradient?: string | null
-          icon?: string | null
           id?: string
-          popular?: boolean | null
-          price?: string | null
-          title: string
+          is_active?: boolean | null
+          section_name: string
           updated_at?: string | null
         }
         Update: {
+          content?: Json
           created_at?: string | null
-          description?: string | null
-          features?: string[] | null
-          gradient?: string | null
-          icon?: string | null
           id?: string
-          popular?: boolean | null
-          price?: string | null
-          title?: string
+          is_active?: boolean | null
+          section_name?: string
           updated_at?: string | null
         }
         Relationships: []
