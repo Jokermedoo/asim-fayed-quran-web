@@ -2,45 +2,85 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const backgroundImages = [
-  'https://images.unsplash.com/photo-1472396961693-142e6e269027?q=80&w=3634&auto=format&fit=crop', // Forest
-  'https://images.unsplash.com/photo-1470813740244-df37b8c1edcb?q=80&w=3880&auto=format&fit=crop', // Space
-  'https://images.unsplash.com/photo-1433086966358-54859d0ed716?q=80&w=4000&auto=format&fit=crop', // Waterfall
-  'https://images.unsplash.com/photo-1482938289607-e9573fc25ebb?q=80&w=3648&auto=format&fit=crop', // River mountains
-];
-
 const BackgroundSlider = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
 
+  const backgrounds = [
+    {
+      id: 1,
+      gradient: 'from-blue-900 via-purple-900 to-indigo-900',
+      pattern: 'cosmic'
+    },
+    {
+      id: 2,
+      gradient: 'from-emerald-900 via-teal-900 to-cyan-900',
+      pattern: 'nature'
+    },
+    {
+      id: 3,
+      gradient: 'from-purple-900 via-indigo-900 to-blue-900',
+      pattern: 'spiritual'
+    }
+  ];
+
   useEffect(() => {
     const interval = setInterval(() => {
-      setCurrentIndex((prevIndex) => (prevIndex + 1) % backgroundImages.length);
-    }, 6000); // Change every 6 seconds
+      setCurrentIndex((prev) => (prev + 1) % backgrounds.length);
+    }, 15000); // Change every 15 seconds
 
     return () => clearInterval(interval);
-  }, []);
+  }, [backgrounds.length]);
 
   return (
-    <div className="absolute inset-0 overflow-hidden">
+    <div className="fixed inset-0 z-0">
       <AnimatePresence mode="wait">
         <motion.div
           key={currentIndex}
-          initial={{ opacity: 0, scale: 1.1 }}
-          animate={{ opacity: 0.3, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.95 }}
-          transition={{ duration: 2, ease: "easeInOut" }}
-          className="absolute inset-0"
-          style={{
-            backgroundImage: `url(${backgroundImages[currentIndex]})`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            backgroundRepeat: 'no-repeat',
-          }}
+          className={`absolute inset-0 bg-gradient-to-br ${backgrounds[currentIndex].gradient}`}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 2 }}
         />
       </AnimatePresence>
-      
-      {/* Gradient overlay */}
-      <div className="absolute inset-0 bg-gradient-to-br from-navy-blue-900/80 via-emerald-800/60 to-gold-600/40" />
+
+      {/* Overlay patterns */}
+      <div className="absolute inset-0 opacity-10">
+        {backgrounds[currentIndex].pattern === 'cosmic' && (
+          <div
+            className="absolute inset-0"
+            style={{
+              backgroundImage: `radial-gradient(circle at 25% 25%, rgba(255,255,255,0.2) 2px, transparent 0),
+                               radial-gradient(circle at 75% 75%, rgba(255,255,255,0.1) 1px, transparent 0)`,
+              backgroundSize: '100px 100px, 50px 50px'
+            }}
+          />
+        )}
+        
+        {backgrounds[currentIndex].pattern === 'nature' && (
+          <div
+            className="absolute inset-0"
+            style={{
+              backgroundImage: `linear-gradient(45deg, rgba(255,255,255,0.1) 25%, transparent 25%),
+                               linear-gradient(-45deg, rgba(255,255,255,0.1) 25%, transparent 25%)`,
+              backgroundSize: '60px 60px'
+            }}
+          />
+        )}
+        
+        {backgrounds[currentIndex].pattern === 'spiritual' && (
+          <div
+            className="absolute inset-0"
+            style={{
+              backgroundImage: `radial-gradient(circle at 2px 2px, rgba(255,255,255,0.15) 1px, transparent 0)`,
+              backgroundSize: '40px 40px'
+            }}
+          />
+        )}
+      </div>
+
+      {/* Additional atmospheric effects */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-black/10" />
     </div>
   );
 };

@@ -18,6 +18,16 @@ export interface WebsiteContent {
     translation: string;
     source: string;
   }>;
+  spiritualJourney: {
+    title: string;
+    stages: Array<{
+      id: number;
+      title: string;
+      description: string;
+      icon: string;
+      color: string;
+    }>;
+  };
   cosmicExploration: {
     title: string;
     stages: Array<{
@@ -108,6 +118,46 @@ const defaultContent: WebsiteContent = {
       source: 'سورة الذاريات - الآية 47'
     }
   ],
+  spiritualJourney: {
+    title: 'رحلة التدبر في القرآن',
+    stages: [
+      {
+        id: 1,
+        title: 'التلاوة',
+        description: 'قراءة القرآن بتأني وخشوع',
+        icon: '📖',
+        color: 'from-blue-900 to-purple-900'
+      },
+      {
+        id: 2,
+        title: 'التدبر',
+        description: 'التفكر في معاني الآيات الكريمة',
+        icon: '🤲',
+        color: 'from-green-800 to-emerald-700'
+      },
+      {
+        id: 3,
+        title: 'التطبيق',
+        description: 'تطبيق تعاليم القرآن في الحياة',
+        icon: '✨',
+        color: 'from-gold-600 to-amber-600'
+      },
+      {
+        id: 4,
+        title: 'الدعوة',
+        description: 'نشر الخير والهداية للآخرين',
+        icon: '🌟',
+        color: 'from-purple-700 to-indigo-700'
+      },
+      {
+        id: 5,
+        title: 'العبادة',
+        description: 'زيادة الخشوع والقرب من الله',
+        icon: '🕌',
+        color: 'from-teal-700 to-cyan-700'
+      }
+    ]
+  },
   cosmicExploration: {
     title: 'آيات الله في الكون',
     stages: [
