@@ -1,143 +1,105 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { Menu, X, BookOpen, User, Phone, Settings } from 'lucide-react';
+import { Menu, X, BookOpen, Home, User, Briefcase, MessageCircle } from 'lucide-react';
+import { useLiveContent } from '../hooks/useLiveContent';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
-  const navigate = useNavigate();
-  const location = useLocation();
+  const { content } = useLiveContent();
 
   const navItems = [
-    { name: 'الرئيسية', path: '/', icon: BookOpen },
-    { name: 'عن الشيخ', path: '/about', icon: User },
-    { name: 'الخدمات', path: '/services', icon: Settings },
-    { name: 'تواصل معنا', path: '/contact', icon: Phone },
+    { id: 'home', label: 'الرئيسية', icon: Home },
+    { id: 'about', label: 'من نحن', icon: User },
+    { id: 'services', label: 'خدماتنا', icon: Briefcase },
+    { id: 'wisdom', label: 'الحكمة', icon: BookOpen },
+    { id: 'journey', label: 'الرحلة الروحية', icon: MessageCircle },
   ];
 
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 50);
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  const scrollToSection = (sectionId: string) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+      setIsOpen(false);
+    }
+  };
 
   return (
-    <motion.nav
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        scrolled 
-          ? 'bg-black/80 backdrop-blur-xl border-b border-gold-400/20' 
-          : 'bg-transparent'
-      }`}
+    <motion.nav 
+      className="fixed top-0 w-full z-50 bg-white/5 backdrop-blur-lg border-b border-white/10"
       initial={{ y: -100 }}
       animate={{ y: 0 }}
-      transition={{ duration: 0.8 }}
+      transition={{ duration: 0.5 }}
     >
-      <div className="container mx-auto px-6 py-4">
-        <div className="flex items-center justify-between">
+      <div className="container mx-auto px-4">
+        <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <motion.div
-            className="flex items-center space-x-3 space-x-reverse cursor-pointer"
-            onClick={() => navigate('/')}
+          <motion.div 
+            className="flex items-center gap-3"
             whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
           >
-            <div className="w-12 h-12 bg-gradient-to-br from-gold-400 to-emerald-500 rounded-full flex items-center justify-center">
-              <span className="text-white font-bold text-xl">ع</span>
+            <div className="w-10 h-10 bg-gradient-to-br from-blue-400 to-purple-600 rounded-full flex items-center justify-center">
+              <BookOpen className="w-6 h-6 text-white" />
             </div>
             <div className="text-white">
-              <h1 className="font-amiri font-bold text-xl">الشيخ عاصم فايد</h1>
-              <p className="font-cairo text-sm text-gold-300">معلم القرآن الكريم</p>
+              <h2 className="font-bold text-lg">{content.hero.title}</h2>
             </div>
           </motion.div>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-8 space-x-reverse">
-            {navItems.map((item, index) => {
-              const Icon = item.icon;
-              const isActive = location.pathname === item.path;
-              
-              return (
-                <motion.button
-                  key={item.path}
-                  onClick={() => navigate(item.path)}
-                  className={`relative flex items-center space-x-2 space-x-reverse px-4 py-2 rounded-full font-cairo font-medium transition-all duration-300 ${
-                    isActive 
-                      ? 'text-gold-400 bg-gold-400/10' 
-                      : 'text-white hover:text-gold-400'
-                  }`}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  initial={{ opacity: 0, y: -20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.1 }}
-                >
-                  <Icon size={18} />
-                  <span>{item.name}</span>
-                  
-                  {isActive && (
-                    <motion.div
-                      className="absolute inset-0 border-2 border-gold-400 rounded-full"
-                      layoutId="activeTab"
-                      transition={{ type: "spring", duration: 0.6 }}
-                    />
-                  )}
-                </motion.button>
-              );
-            })}
+          <div className="hidden md:flex items-center gap-8">
+            {navItems.map((item) => (
+              <motion.button
+                key={item.id}
+                onClick={() => scrollToSection(item.id)}
+                className="text-white hover:text-blue-300 transition-colors duration-200 flex items-center gap-2"
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <item.icon className="w-4 h-4" />
+                {item.label}
+              </motion.button>
+            ))}
           </div>
 
           {/* Mobile Menu Button */}
-          <motion.button
-            className="md:hidden text-white p-2"
-            onClick={() => setIsOpen(!isOpen)}
-            whileTap={{ scale: 0.9 }}
-          >
-            {isOpen ? <X size={24} /> : <Menu size={24} />}
-          </motion.button>
+          <div className="md:hidden">
+            <motion.button
+              onClick={() => setIsOpen(!isOpen)}
+              className="text-white p-2"
+              whileTap={{ scale: 0.95 }}
+            >
+              {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            </motion.button>
+          </div>
         </div>
 
         {/* Mobile Navigation */}
         <AnimatePresence>
           {isOpen && (
             <motion.div
-              className="md:hidden mt-4 pb-4"
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.3 }}
+              className="md:hidden bg-white/10 backdrop-blur-lg rounded-2xl mt-2 p-4 border border-white/20"
+              initial={{ opacity: 0, y: -20, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -20, scale: 0.95 }}
+              transition={{ duration: 0.2 }}
             >
-              <div className="flex flex-col space-y-2">
-                {navItems.map((item, index) => {
-                  const Icon = item.icon;
-                  const isActive = location.pathname === item.path;
-                  
-                  return (
-                    <motion.button
-                      key={item.path}
-                      onClick={() => {
-                        navigate(item.path);
-                        setIsOpen(false);
-                      }}
-                      className={`flex items-center space-x-3 space-x-reverse px-4 py-3 rounded-xl font-cairo font-medium transition-all duration-300 ${
-                        isActive 
-                          ? 'text-gold-400 bg-gold-400/10 border border-gold-400/30' 
-                          : 'text-white hover:text-gold-400 hover:bg-white/5'
-                      }`}
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: index * 0.1 }}
-                      whileTap={{ scale: 0.95 }}
-                    >
-                      <Icon size={20} />
-                      <span>{item.name}</span>
-                    </motion.button>
-                  );
-                })}
+              <div className="space-y-2">
+                {navItems.map((item, index) => (
+                  <motion.button
+                    key={item.id}
+                    onClick={() => scrollToSection(item.id)}
+                    className="w-full text-right text-white hover:text-blue-300 transition-colors duration-200 p-3 rounded-lg hover:bg-white/10 flex items-center gap-3"
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: index * 0.1 }}
+                    whileHover={{ x: 5 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <item.icon className="w-5 h-5" />
+                    {item.label}
+                  </motion.button>
+                ))}
               </div>
             </motion.div>
           )}
